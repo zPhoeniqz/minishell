@@ -14,5 +14,7 @@
 # define MINISHELL_H
 
 #include "pipex.h"
+#include "../lib/libft/libft.h"
+#include <stdlib.h>
 
 #endif

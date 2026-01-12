@@ -9,7 +9,7 @@ LIBFT_DIR	= $(LIB_DIR)/libft
 LIB_FT		= $(LIBFT_DIR)/libft.a
 
 VPATH		= src:src
-SRC			= main.c pipex_main.c pipex.c
+SRC			= 
 OBJ			= $(addprefix $(BUILD_DIR)/,$(SRC:.c=.o))
 
 CC			= cc
