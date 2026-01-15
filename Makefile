@@ -8,11 +8,11 @@ LIBFT_DIR	= libft
 LIBFT_A		= libft/libft.a
 
 VPATH		= src:src
-SRC			= prompt.c path.c
+SRC			= prompt.c path.c signals.c
 OBJ			= $(addprefix $(BUILD_DIR)/,$(SRC:.c=.o))
 
 CC			= cc
-CFLAGS		= -Wall -Werror -Wextra -g
+CFLAGS		= -Wall -Werror -Wextra -ggdb
 REMOVE		= rm -rf
 
 LIBFLAGS 	= -lreadline
