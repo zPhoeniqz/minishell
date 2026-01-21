@@ -58,3 +58,4 @@ dkms.conf
 .ccls-cache/
 minishell
 *.swp
+.swp
