@@ -56,3 +56,6 @@ dkms.conf
 
 # lsp cache
 .ccls-cache/
+minishell
+*.swp
+.swp
