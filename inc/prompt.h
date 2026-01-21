@@ -1,23 +1,20 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_striteri.c                                      :+:      :+:    :+:   */
+/*   prompt.h                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: pbindl <pbindl@student.42berlin.de>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/05/14 21:04:14 by pbindl            #+#    #+#             */
-/*   Updated: 2025/05/14 21:08:43 by pbindl           ###   ########.fr       */
+/*   Created: 2026/01/07 17:39:55 by pbindl            #+#    #+#             */
+/*   Updated: 2026/01/07 17:59:06 by pbindl           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-void	ft_striteri(char *s, void (*f)(unsigned int, char *))
-{
-	unsigned int	i;
+#ifndef PROMPT_H
+# define PROMPT_H
 
-	i = 0;
-	while (s[i])
-	{
-		(*f)(i, s + i);
-		i++;
-	}
-}
+# include <stdbool.h>
+
+void	prompt_run(char **envp);
+
+#endif

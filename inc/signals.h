@@ -1,32 +1,22 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_strncmp.c                                       :+:      :+:    :+:   */
+/*   signals.h                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: pbindl <pbindl@student.42berlin.de>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/05/15 18:38:39 by pbindl            #+#    #+#             */
-/*   Updated: 2025/05/22 17:08:59 by pbindl           ###   ########.fr       */
+/*   Created: 2026/01/15 17:49:28 by pbindl            #+#    #+#             */
+/*   Updated: 2026/01/15 22:48:15 by pbindl           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
+#ifndef SIGNALS_H
+# define SIGNALS_H
 
-int	ft_strncmp(const char *s1, const char *s2, size_t n)
-{
-	unsigned char	c1;
-	unsigned char	c2;
+# include <stdbool.h>
 
-	c2 = *s2++;
-	c1 = *s1++;
-	while (n-- > 0)
-	{
-		if (c1 != c2)
-			return (c1 - c2);
-		c2 = *s2++;
-		c1 = *s1++;
-		if (!c1 && !c2)
-			break ;
-	}
-	return (0);
-}
+int		addsighandler(int sig, void (*handler)(int), int flags);
+void	signals_init(void);
+void	signals_forward_int(int sig);
+
+#endif

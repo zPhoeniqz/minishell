@@ -6,14 +6,14 @@
 /*   By: whuth <whuth@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/19 12:12:33 by whuth             #+#    #+#             */
-/*   Updated: 2025/12/19 12:12:37 by whuth            ###   ########.fr       */
+/*   Updated: 2026/01/21 17:07:57 by whuth            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef PIPEX_H
 # define PIPEX_H
 
-# include "libft.h"
+# include "../libft/libft.h"
 # include <fcntl.h>
 # include <stdio.h>
 # include <stdlib.h>
