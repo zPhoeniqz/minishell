@@ -12,6 +12,7 @@
 
 #include "inc/path.h"
 #include "libft/libft.h"
+#include <stdio.h>
 #include <readline/readline.h>
 #include <stdbool.h>
 #include <stdlib.h>

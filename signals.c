@@ -14,6 +14,7 @@
 #include "libft/libft.h"
 #include "signal.h"
 #include <bits/types/siginfo_t.h>
+#include <stdio.h>
 #include <readline/readline.h>
 #include <signal.h>
 #include <stdlib.h>

@@ -15,11 +15,11 @@
 #include "inc/signals.h"
 #include "libft/libft.h"
 #include <linux/limits.h>
+#include <stdio.h>
 #include <readline/history.h>
 #include <readline/readline.h>
 #include <signal.h>
 #include <stdbool.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <sys/types.h>
 #include <sys/wait.h>
@@ -92,6 +92,7 @@ void	prompt_run(char **envp)
 	int		status;
 
 	prompt = NULL;
+      argv = NULL;
 	prompt_create(&prompt, cwd_state(UPDATE));
 	while (true)
 	{
@@ -100,9 +101,9 @@ void	prompt_run(char **envp)
 			prompt_create(&prompt, cwd_state(READ));
 		status = readcommand(&argv, prompt);
 		if (status == 0)
-			continue ;
+			continue ; 
 		else if (status == -1)
-			return (free(prompt), cwd_state(FREE), arr_destroy((void **)argv));
+			return (cwd_state(FREE), free(prompt));
 		pid = fork();
 		if (pid == 0)
 		{
