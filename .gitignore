@@ -4,9 +4,5 @@
 !inc/*.h
 !src/
 !src/*.c
-!libft/
-!libft/*.c
-!libft/*.h
-!libft/Makefile
 !CONTRIBUTING.md
 !README.md
