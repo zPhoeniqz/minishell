@@ -1,8 +1,0 @@
-*
-
-!inc/
-!inc/*.h
-!src/
-!src/*.c
-!CONTRIBUTING.md
-!README.md
