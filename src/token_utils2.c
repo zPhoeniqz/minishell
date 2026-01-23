@@ -1,30 +1,45 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   minishell.h                                        :+:      :+:    :+:   */
+/*   token_utils2.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: whuth <whuth@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/12/19 12:01:21 by whuth             #+#    #+#             */
-/*   Updated: 2026/01/23 15:36:10 by whuth            ###   ########.fr       */
+/*   Created: 2026/01/23 15:32:16 by whuth             #+#    #+#             */
+/*   Updated: 2026/01/23 15:36:59 by whuth            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef MINISHELL_H
-# define MINISHELL_H
+#include "../inc/minishell.h"
 
-# include "../libft/libft.h"
-# include "pipex.h"
+int	is_paren(char c)
+{
+	return (c == '(' || c == ')');
+}
 
-# define DEL " \t\n\r\v\f"
+char	**strarr_destruct(char **in, int n)
+{
+	while (n >= 0)
+		free(in[n--]);
+	free(in);
+	return (NULL);
+}
 
-char			**gettokens(char *input);
-int				is_paren(char c);
-unsigned int	count_elts(const char *s);
-int				check_quote(char *s, size_t *elen);
-int				del_occ(char c);
-size_t			token_len(const char *s);
-char			**strarr_destruct(char **in, int n);
-int				is_sep(char c);
+int	del_occ(char c)
+{
+	int	i;
 
-#endif
+	i = 0;
+	while (DEL[i])
+	{
+		if (DEL[i] == c)
+			return (1);
+		++i;
+	}
+	return (0);
+}
+
+int	is_sep(char c)
+{
+	return (del_occ(c) && !is_paren(c));
+}
