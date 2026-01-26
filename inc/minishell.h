@@ -6,7 +6,7 @@
 /*   By: whuth <whuth@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/19 12:01:21 by whuth             #+#    #+#             */
-/*   Updated: 2026/01/23 15:36:10 by whuth            ###   ########.fr       */
+/*   Updated: 2026/01/26 17:05:21 by whuth            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,5 +26,7 @@ int				del_occ(char c);
 size_t			token_len(const char *s);
 char			**strarr_destruct(char **in, int n);
 int				is_sep(char c);
+
+char	*ft_strcdup(const char *s, char c);
 
 #endif
