@@ -6,7 +6,7 @@
 /*   By: whuth <whuth@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/21 16:36:28 by whuth             #+#    #+#             */
-/*   Updated: 2026/01/23 15:37:01 by whuth            ###   ########.fr       */
+/*   Updated: 2026/01/28 10:05:31 by whuth            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,7 @@ static size_t	next_elen(char *input, char **out, int i)
 	return (elen);
 }
 
-static int	store_token(char **out, int i, char **input)
+static int	store_token(char **out, int i, char **input, t_vl *vl)
 {
 	size_t	elen;
 
@@ -54,11 +54,13 @@ static int	store_token(char **out, int i, char **input)
 		return (0);
 	}
 	ft_strlcpy(out[i], *input, elen + 1);
+	if (out[i][0] == '$')
+		out[i] = find_val(out[i] + 1, &vl);
 	*input += elen;
 	return (1);
 }
 
-char	**gettokens(char *input)
+void	gettokens(char *input, t_data *data)
 {
 	int		i;
 	char	**out;
@@ -67,55 +69,15 @@ char	**gettokens(char *input)
 	elcount = (int)count_elts(input);
 	out = ft_calloc(elcount + 1, sizeof(char *));
 	if (!out)
-		return (NULL);
+		return ;
 	i = 0;
 	while (i < elcount)
 	{
-		if (!store_token(out, i, &input))
-			return (NULL);
+		if (!store_token(out, i, &input, data->vl))
+			return ;
 		i++;
 	}
 	out[i] = NULL;
-	return (out);
+	data->tl->tokens = out;
+	data->tl->ll = elcount;
 }
-//*/
-static void	free_tokens(char **tokens)
-{
-	int	i;
-
-	if (!tokens)
-		return ;
-	i = 0;
-	while (tokens[i])
-	{
-		free(tokens[i]);
-		i++;
-	}
-	free(tokens);
-}
-
-int	main(int ac, char **av)
-{
-	char	**tokens;
-	int		i;
-
-	if (ac != 2)
-	{
-		ft_putendl_fd("usage: ./tokenizer \"input\"", STDERR_FILENO);
-		return (2);
-	}
-	tokens = gettokens(av[1]);
-	if (!tokens)
-	{
-		ft_putendl_fd("tokenizer error", STDERR_FILENO);
-		return (3);
-	}
-	i = 0;
-	while (tokens[i])
-	{
-		ft_putendl_fd(tokens[i], STDOUT_FILENO);
-		i++;
-	}
-	free_tokens(tokens);
-	return (0);
-}//*/
