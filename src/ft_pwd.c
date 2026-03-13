@@ -6,7 +6,7 @@
 /*   By: whuth <whuth@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/12 15:51:39 by whuth             #+#    #+#             */
-/*   Updated: 2026/01/12 15:55:30 by whuth            ###   ########.fr       */
+/*   Updated: 2026/01/22 14:43:16 by whuth            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,8 @@
 
 void	ft_pwd(void)
 {
-	const char *pwd;
-	const char *env_pwd;
+	const char	*pwd;
+	const char	*env_pwd;
 
 	pwd = "PWD";
 	env_pwd = getenv(pwd);

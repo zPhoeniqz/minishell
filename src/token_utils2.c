@@ -1,30 +1,45 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   pipex.h                                            :+:      :+:    :+:   */
+/*   token_utils2.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: whuth <whuth@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/12/19 12:12:33 by whuth             #+#    #+#             */
-/*   Updated: 2026/01/21 17:07:57 by whuth            ###   ########.fr       */
+/*   Created: 2026/01/23 15:32:16 by whuth             #+#    #+#             */
+/*   Updated: 2026/01/23 15:36:59 by whuth            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef PIPEX_H
-# define PIPEX_H
+#include "../inc/minishell.h"
 
-# include "../libft/libft.h"
-# include <fcntl.h>
-# include <stdio.h>
-# include <stdlib.h>
-# include <string.h>
-# include <sys/wait.h>
-# include <unistd.h>
+int	is_paren(char c)
+{
+	return (c == '(' || c == ')');
+}
 
-void	ft_exit(void);
-void	ft_exit_file(char *file);
-void	parent(char **av, char **envp, int *fd);
-void	child(char **av, char **envp, int *fd);
-void	pipex(char *arg, char **envp);
+char	**strarr_destruct(char **in, int n)
+{
+	while (n >= 0)
+		free(in[n--]);
+	free(in);
+	return (NULL);
+}
 
-#endif
+int	del_occ(char c)
+{
+	int	i;
+
+	i = 0;
+	while (DEL[i])
+	{
+		if (DEL[i] == c)
+			return (1);
+		++i;
+	}
+	return (0);
+}
+
+int	is_sep(char c)
+{
+	return (del_occ(c) && !is_paren(c));
+}
