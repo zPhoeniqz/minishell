@@ -6,11 +6,10 @@
 /*   By: whuth <whuth@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/26 16:18:03 by whuth             #+#    #+#             */
-/*   Updated: 2026/01/26 17:47:20 by whuth            ###   ########.fr       */
+/*   Updated: 2026/01/28 17:29:42 by whuth            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../inc/localvar.h"
 #include "../inc/minishell.h"
 
 static int	key_char(char c)
@@ -19,16 +18,7 @@ static int	key_char(char c)
 			&& c <= '9') || c == '_');
 }
 
-// only one arg
-// no whitespace
-// start with [A-Za-z_]
-// additional can contain numbers [0-9]
-// only one '=', before is the key, after is the assigned value
-// special chars only in value not in key -> my.var nope; myvar=.100 yop
-// if value is in quotations,
-// the rules above dont matter.string can be anything
-
-static int	check_legit_var(int ac, char **av)
+int	check_legit_var(int ac, char **av)
 {
 	int	i;
 
@@ -47,23 +37,70 @@ static int	check_legit_var(int ac, char **av)
 	return (1);
 }
 
-void	save_var(char *s, t_lv **var_list)
+char	*find_val(char *s, t_vl **vl)
 {
-	t_lv	*tmp;
-	t_lv	*new;
+	int		i;
+	char	*tmp_key;
+	char	*out_val;
 
-	new = malloc(sizeof(t_lv));
+	i = 0;
+	while (!del_occ(s[i]))
+		++i;
+	if (!(tmp_key = malloc(sizeof(char) * i)))
+		return (NULL);
+	ft_strlcpy(tmp_key, s, i);
+	while (*vl)
+	{
+		if (!ft_strncmp((*vl)->key, tmp_key, i))
+		{
+			if (!(out_val = malloc(sizeof(char) * (ft_strlen((*vl)->value) + 1))))
+				return (free(tmp_key), NULL);
+			ft_strlcpy(out_val, (*vl)->value, ft_strlen((*vl)->value) + 1);
+			return (free(tmp_key), out_val);
+		}
+		*vl = (*vl)->next;
+	}
+	return (free(tmp_key), NULL);
+}
+
+char	*dqvar(char *s, t_vl **vl)
+{
+	int		i;
+	char	*out;
+	char	*tmp_val;
+
+
+	i = 0;
+	if (!(out = malloc(sizeof(char) * ft_strlen(s))))
+		return (NULL);
+	while (s[i])
+	{
+		if (s[i] == '$')
+		{
+			tmp_val = find_val(s + i, vl);
+			ft_strlcat(out, tmp_val, ft_strlen(out) + ft_strlen(tmp_val));
+			i += ft_strlen(tmp_val);
+		}
+		out[i] = s[i];
+		++i;
+	}
+	return (out);
+}
+
+void	save_var(char *s, t_vl **var_list)
+{
+	t_vl	*tmp;
+	t_vl	*new;
+
+	new = malloc(sizeof(t_vl));
 	new->key = ft_strcdup(s, '=');
 	new->dq = 0;
 	while (*s && *s != '=')
 		++s;
 	if (*(++s) == '\"')
-	{
-		++s;
 		new->dq = 1;
-	}
 	if (new->dq)
-		new->value = ft_strcdup(s, '\"');
+		new->value = dqvar(++s, var_list);
 	else
 		new->value = ft_strcdup(s, 0);
 	new->next = NULL;
@@ -77,51 +114,3 @@ void	save_var(char *s, t_lv **var_list)
 		tmp->next = new;
 	}
 }
-
-void	free_var_list(t_lv **var_list)
-{
-	t_lv	*tmp;
-
-	if (!var_list || !*var_list)
-		return ;
-	while (*var_list)
-	{
-		tmp = (*var_list)->next;
-		free((*var_list)->key);
-		free((*var_list)->value);
-		free(*var_list);
-		*var_list = tmp;
-	}
-	*var_list = NULL;
-}
-
-//*/
-static void	print_var_list(t_lv **var_list)
-{
-	t_lv	*tmp;
-
-	tmp = *var_list;
-	while (tmp)
-	{
-		printf("key:\t%s\nvalue:\t%s\ndq:\t%d\n\n", tmp->key, tmp->value,
-			tmp->dq);
-		tmp = tmp->next;
-	}
-}
-
-int	main(int ac, char **av)
-{
-	t_lv	*var_list;
-
-	if (!check_legit_var(ac, av))
-	{
-		free(av);
-		return (1);
-	}
-	var_list = NULL;
-	save_var(av[1], &var_list);
-	print_var_list(&var_list);
-	free_var_list(&var_list);
-	return (0);
-}
-//*/
