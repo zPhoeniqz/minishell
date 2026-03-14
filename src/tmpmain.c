@@ -64,7 +64,6 @@ static void	print_var_list(t_vl *var_list)
 		tmp = tmp->next;
 	}
 }
-/*/
 
 int	main(void)
 {
@@ -90,12 +89,11 @@ int	main(void)
 	if (check_legit_var(2, varin))
 		save_var(varin[1], &data->vl);
 
-	input = "say my name: $name";
+	input = "say my name:$name";
 	gettokens(input, data);
-	//*/
 	for (int i = 0; i < data->tl->ll; ++i)
 		printf("%s\n", data->tl->tokens[i]);
-	//*/
 	free_all(data);
 	return (0);
 }
+/*/
