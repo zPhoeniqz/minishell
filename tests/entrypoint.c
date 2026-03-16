@@ -1,26 +1,18 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   pipex.c                                            :+:      :+:    :+:   */
+/*   entrypoint.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: whuth <whuth@student.42berlin.de>          +#+  +:+       +#+        */
+/*   By: pbindl <pbindl@student.42berlin.de>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/12/19 12:14:36 by whuth             #+#    #+#             */
-/*   Updated: 2026/03/16 17:44:44 by pbindl           ###   ########.fr       */
+/*   Created: 2026/03/16 17:34:02 by pbindl            #+#    #+#             */
+/*   Updated: 2026/03/16 17:35:07 by pbindl           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../inc/pipex.h"
+#include "../inc/testing.h"
 
-void	pipex(char *arg, char **envp)
+int	main(int argc, char **argv, char **envp)
 {
-	char	*cmd[4];
-
-	cmd[0] = "/bin/sh";
-	cmd[1] = "-c";
-	cmd[2] = arg;
-	cmd[3] = NULL;
-	execve("/bin/sh", cmd, envp);
-	perror("Error");
-	exit(126);
+	builtins_test(argc, argv, envp);
 }

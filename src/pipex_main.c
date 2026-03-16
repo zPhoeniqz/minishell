@@ -6,11 +6,11 @@
 /*   By: whuth <whuth@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/19 12:13:55 by whuth             #+#    #+#             */
-/*   Updated: 2025/12/19 12:16:38 by whuth            ###   ########.fr       */
+/*   Updated: 2026/03/16 17:45:01 by pbindl           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "pipex.h"
+#include "../inc/pipex.h"
 
 void	ft_exit(void)
 {

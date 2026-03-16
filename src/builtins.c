@@ -6,12 +6,13 @@
 /*   By: pbindl <pbindl@student.42berlin.de>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/21 18:13:45 by pbindl            #+#    #+#             */
-/*   Updated: 2026/01/21 21:17:33 by pbindl           ###   ########.fr       */
+/*   Updated: 2026/03/16 18:23:26 by pbindl           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "inc/path.h"
-#include "libft/libft.h"
+#include "../inc/path.h"
+#include "../inc/prompt.h"
+#include "../libft/libft.h"
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>

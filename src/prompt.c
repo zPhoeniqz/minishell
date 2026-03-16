@@ -6,7 +6,7 @@
 /*   By: pbindl <pbindl@student.42berlin.de>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/07 16:46:31 by pbindl            #+#    #+#             */
-/*   Updated: 2026/01/15 22:49:22 by pbindl           ###   ########.fr       */
+/*   Updated: 2026/03/16 19:30:03 by pbindl           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,6 +92,7 @@ void	prompt_run(char **envp)
 	int		status;
 
 	prompt = NULL;
+	argv = NULL;
 	prompt_create(&prompt, cwd_state(UPDATE));
 	while (true)
 	{
@@ -102,7 +103,7 @@ void	prompt_run(char **envp)
 		if (status == 0)
 			continue ;
 		else if (status == -1)
-			return (free(prompt), cwd_state(FREE), arr_destroy((void **)argv));
+			return (cwd_state(FREE), free(prompt));
 		pid = fork();
 		if (pid == 0)
 		{
@@ -121,7 +122,7 @@ void	prompt_run(char **envp)
 	}
 }
 
-//*/
+/*/
 int	main(int argc, char **argv, char **envp)
 {
 	(void)argc;

@@ -1,24 +1,18 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_pwd.c                                           :+:      :+:    :+:   */
+/*   testing.h                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: whuth <whuth@student.42berlin.de>          +#+  +:+       +#+        */
+/*   By: pbindl <pbindl@student.42berlin.de>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/01/12 15:51:39 by whuth             #+#    #+#             */
-/*   Updated: 2026/01/22 14:43:16 by whuth            ###   ########.fr       */
+/*   Created: 2026/03/16 17:33:05 by pbindl            #+#    #+#             */
+/*   Updated: 2026/03/16 17:33:42 by pbindl           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#ifndef TESTING_H
+# define TESTING_H
 
-void	ft_pwd(void)
-{
-	const char	*pwd;
-	const char	*env_pwd;
+int	builtins_test(int argc, char **argv, char **envp);
 
-	pwd = "PWD";
-	env_pwd = getenv(pwd);
-	if (env_pwd)
-		ft_printf("%s\n", env_pwd);
-}
+#endif
