@@ -1,6 +1,9 @@
 # Prerequisites
 *.d
 
+Makefile
+.gitignore
+
 # Object files
 *.o
 *.ko
