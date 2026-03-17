@@ -8,9 +8,8 @@ LIBFT_DIR	= libft
 LIBFT_A		= libft/libft.a
 
 VPATH		= src:src
-SRC			= tmpmain.c local_var.c token.c token_utils.c \
-			  token_utils2.c utils.c builtins.c ft_pwd.c \
-			  path.c pipex.c pipex_main.c prompt.c signals.c
+SRC			= tmpmain.c local_var.c token.c token_utils.c token_utils2.c \
+			  utils.c builtins.c path.c pipex.c pipex_main.c prompt.c signals.c
 OBJ			= $(addprefix $(BUILD_DIR)/,$(SRC:.c=.o))
 
 CC			= cc

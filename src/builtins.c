@@ -10,8 +10,8 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "inc/path.h"
-#include "libft/libft.h"
+#include "../inc/path.h"
+#include "../libft/libft.h"
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
