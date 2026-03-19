@@ -6,13 +6,14 @@
 /*   By: pbindl <pbindl@student.42berlin.de>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/07 16:46:31 by pbindl            #+#    #+#             */
-/*   Updated: 2026/03/16 19:30:03 by pbindl           ###   ########.fr       */
+/*   Updated: 2026/03/17 20:34:39 by pbindl           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/path.h"
 #include "../inc/prompt.h"
 #include "../inc/signals.h"
+#include "../inc/utils.h"
 #include "../libft/libft.h"
 #include <linux/limits.h>
 #include <readline/history.h>
@@ -30,18 +31,6 @@ static char	*prompt_create(char **buf, const char *path)
 	free(*buf);
 	*buf = ft_strjoin(path, "> ");
 	return (*buf);
-}
-
-static void	arr_destroy(void **arr)
-{
-	char	**oarr;
-
-	if (!arr)
-		return ;
-	oarr = (char **)arr;
-	while (*arr)
-		free(*arr++);
-	free(oarr);
 }
 
 static bool	run_system_exec(char **argv, char **envp)

@@ -6,13 +6,13 @@
 /*   By: pbindl <pbindl@student.42berlin.de>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/16 17:33:05 by pbindl            #+#    #+#             */
-/*   Updated: 2026/03/16 17:33:42 by pbindl           ###   ########.fr       */
+/*   Updated: 2026/03/19 18:52:14 by pbindl           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef TESTING_H
 # define TESTING_H
 
-int	builtins_test(int argc, char **argv, char **envp);
+int	builtins_test(int argc, char **argv);
 
 #endif

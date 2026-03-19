@@ -1,29 +1,23 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   entrypoint.c                                       :+:      :+:    :+:   */
+/*   utils.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: pbindl <pbindl@student.42berlin.de>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/03/16 17:34:02 by pbindl            #+#    #+#             */
-/*   Updated: 2026/03/19 18:53:00 by pbindl           ###   ########.fr       */
+/*   Created: 2026/03/17 19:41:36 by pbindl            #+#    #+#             */
+/*   Updated: 2026/03/17 20:55:17 by pbindl           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../inc/testing.h"
-#include "../inc/utils.h"
-#include <stdio.h>
+#ifndef UTILS_H
+# define UTILS_H
 
-extern char	**environ;
+# include <stddef.h>
 
-int	main(int argc, char **argv)
-{
-	ft_env_make_individual_alloc(environ);
-	builtins_test(argc, argv);
-	while (*environ)
-	{
-		printf("%s\n", *environ);
-		environ++;
-	}
-	ft_env_destroy(environ);
-}
+void	*ft_realloc(void *ptr, size_t newsize);
+void	arr_destroy(void **arr);
+void	ft_env_destroy(char **envp);
+void	ft_env_make_individual_alloc(char **envp);
+
+#endif

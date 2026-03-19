@@ -6,7 +6,7 @@
 /*   By: pbindl <pbindl@student.42berlin.de>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/21 18:13:45 by pbindl            #+#    #+#             */
-/*   Updated: 2026/03/16 18:23:26 by pbindl           ###   ########.fr       */
+/*   Updated: 2026/03/19 19:15:52 by pbindl           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+extern char	**environ;
+
 void	env(char **envp)
 {
 	char	**e;
@@ -27,55 +29,55 @@ void	env(char **envp)
 		printf("%s\n", *e++);
 }
 
-static bool	reassign(char **envp, char *varname, char *value)
+static int	find_var(char *varname)
 {
-	char	**e;
-	char	*newvar;
-	size_t	size;
-	size_t	varnamesize;
+	size_t	len;
+	int		i;
 
-	e = envp;
-	varnamesize = ft_strlen(varname);
-	while (ft_strncmp(*e, varname, ft_strlen(varname) != 0))
-		e++;
-	if (!*e)
-		return (false);
-	size = varnamesize + 1 + ft_strlen(value);
-	newvar = malloc(size);
-	if (!newvar)
-		return (false);
-	free(*e);
-	ft_strlcpy(newvar, varname, size);
-	newvar[varnamesize] = '=';
-	ft_strlcat(newvar, value, size);
-	*e = newvar;
-	return (true);
+	len = ft_strlen(varname);
+	i = 0;
+	while (environ[i])
+	{
+		if (ft_strncmp(environ[i], varname, len) == 0)
+			return (i);
+		i++;
+	}
+	return (-1);
 }
 
-// TODO reset variables that already have been set
-bool	export(char ***envp, char *varname, char *value)
+static void	assign(char **target, char *varname, char *value)
 {
-	unsigned int	envcount;
-	char			**current_envp;
-	char			**new_envp;
+	size_t	name_len;
+	size_t	val_len;
 
-	envcount = 0;
-	current_envp = *envp;
-	if (reassign(*envp, varname, value))
+	name_len = ft_strlen(varname);
+	val_len = ft_strlen(value);
+	*target = ft_calloc(name_len + 1 + val_len + 1, 1);
+	ft_memcpy(*target, varname, name_len);
+	(*target)[name_len] = '=';
+	ft_memcpy(*target + name_len + 1, value, val_len);
+}
+
+bool	export(char *varname, char *value)
+{
+	char	**e;
+	size_t	num_vars;
+	int		idx;
+
+	idx = find_var(varname);
+	if (idx != -1)
+	{
+		free(environ[idx]);
+		assign(environ + idx, varname, value);
 		return (true);
-	while (current_envp[envcount])
-		envcount++;
-	new_envp = ft_calloc(envcount + 1, sizeof(char *));
-	if (!new_envp)
-		return (false);
-	ft_memcpy(new_envp, current_envp, envcount);
-	new_envp[envcount] = ft_strdup(varname);
-	if (!new_envp[envcount])
-		return (false);
-	if (!reassign(new_envp, varname, value))
-		return (false);
-	free(current_envp);
-	*envp = new_envp;
+	}
+	num_vars = 0;
+	while (environ[num_vars])
+		num_vars++;
+	e = ft_calloc(num_vars + 2, sizeof(char *));
+	ft_memcpy(e, environ, num_vars * sizeof(char *));
+	assign(e + num_vars, varname, value);
+	environ = e;
 	return (true);
 }
 
