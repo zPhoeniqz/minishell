@@ -44,8 +44,10 @@ char	*find_val(char *s, t_vl **vl)
 	char	*out_val;
 
 	i = 0;
-	while (!del_occ(s[i]))
+	/*
+	while (!is_del(s[i]))
 		++i;
+	*/
 	if (!(tmp_key = malloc(sizeof(char) * i)))
 		return (NULL);
 	ft_strlcpy(tmp_key, s, i);

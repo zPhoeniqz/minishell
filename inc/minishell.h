@@ -42,9 +42,9 @@ typedef struct s_data
 int				check_legit_var(int ac, char **av);
 void			gettokens(char *input, t_data *data);
 int				is_paren(char c);
-unsigned int	count_elts(const char *s);
+unsigned int	count_tokens(const char *s);
 int				check_quote(char *s, size_t *elen);
-int				del_occ(char c);
+int				is_del(char c);
 size_t			token_len(const char *s);
 char			**strarr_destruct(char **in, int n);
 int				is_sep(char c);

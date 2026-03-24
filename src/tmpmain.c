@@ -6,7 +6,7 @@
 /*   By: whuth <whuth@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/28 15:56:57 by whuth             #+#    #+#             */
-/*   Updated: 2026/01/28 15:59:07 by whuth            ###   ########.fr       */
+/*   Updated: 2026/03/18 13:04:06 by whuth            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,7 +64,7 @@ static void	print_var_list(t_vl *var_list)
 		tmp = tmp->next;
 	}
 }
-
+/*/
 int	main(void)
 {
 	t_data	*data;
@@ -83,17 +83,15 @@ int	main(void)
 	}
 	data->tl->tokens = NULL;
 	data->tl->ll = 0;
-	
 	varin[0] = "a.out";
 	varin[1] = "name=wasjahuth";
 	if (check_legit_var(2, varin))
 		save_var(varin[1], &data->vl);
-
-	input = "say my name:$name";
+	input = "abcd $name";
 	gettokens(input, data);
 	for (int i = 0; i < data->tl->ll; ++i)
 		printf("%s\n", data->tl->tokens[i]);
 	free_all(data);
 	return (0);
 }
-/*/
+//*/

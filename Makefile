@@ -9,7 +9,7 @@ LIBFT_A		= libft/libft.a
 
 VPATH		= src:src
 SRC			= tmpmain.c local_var.c token.c token_utils.c token_utils2.c \
-			  utils.c builtins.c path.c pipex.c pipex_main.c prompt.c signals.c
+			  utils.c builtins.c path.c signals.c
 OBJ			= $(addprefix $(BUILD_DIR)/,$(SRC:.c=.o))
 
 CC			= cc
@@ -21,27 +21,27 @@ LIBFLAGS 	= -lreadline
 all: $(NAME)
 
 init_submodules:
-	git submodule update --init --recursive
+	@git submodule update --init --recursive
 
 $(LIBFT_A): | init_submodules
-	make -C $(LIBFT_DIR)
+	@make -C $(LIBFT_DIR)
 
 $(BUILD_DIR):
-	mkdir -p $@
+	@mkdir -p $@
 
 $(BUILD_DIR)/%.o: %.c | $(BUILD_DIR) init_submodules
-	$(CC) $(CFLAGS) -c $^ -o $@
+	@$(CC) $(CFLAGS) -c $^ -o $@
 
 $(NAME): $(OBJ) $(LIBFT_A)
-	$(CC) $(CFLAGS) $(OBJ) $(LIBFT_A) $(LIBFLAGS) -o $(NAME)
+	@$(CC) $(CFLAGS) $(OBJ) $(LIBFT_A) $(LIBFLAGS) -o $(NAME)
 
 clean:
-	$(REMOVE) $(BUILD_DIR)
-	make -C $(LIBFT_DIR) clean
+	@$(REMOVE) $(BUILD_DIR)
+	@make -C $(LIBFT_DIR) clean
 
 fclean: clean
-	$(REMOVE) $(NAME)
-	make -C $(LIBFT_DIR) fclean
+	@$(REMOVE) $(NAME)
+	@make -C $(LIBFT_DIR) fclean
 
 re: fclean all
 
