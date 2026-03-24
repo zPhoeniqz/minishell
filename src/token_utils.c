@@ -19,6 +19,7 @@ static void	update_quotes(char c, unsigned int *dquote, unsigned int *squote)
 	else if (c == '\'' && !(*dquote))
 		*squote = !(*squote);
 }
+
 static void	step_count(const char **s, unsigned int *sw,
 		unsigned int *tokencount, unsigned int in_quote)
 {
@@ -69,7 +70,6 @@ unsigned int	count_tokens(const char *s)
 		update_quotes(*s, &dquote, &squote);
 		step_count(&s, &sw, &tokencount, (dquote || squote));
 	}
-	ft_printf("%d\n", tokencount);
 	return (tokencount);
 }
 
@@ -116,7 +116,7 @@ size_t	token_len(const char *s)
 			squote = !squote;
 		if (!dquote && !squote)
 		{
-			if (is_sep(s[i]) || is_paren(s[i]))
+			if (is_sep(s[i]) || is_paren(s[i]) || (s[i] == '$' && i != 0))
 				break ;
 		}
 		i++;
