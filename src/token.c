@@ -12,17 +12,16 @@
 
 #include "../inc/minishell.h"
 
-static char	*sub_val(char *s, t_vl **vl, size_t elen)
+static void	sub_val(char **out, t_vl **vl, size_t elen, int *i)
 {
 	int		cmp;
 	int		val_len;
 	char	*tmp_key;
-	char	*out_val;
 
 	tmp_key = calloc(sizeof(char), elen + 1);
 	if (!tmp_key)
-		return (NULL);
-	ft_strlcpy(tmp_key, s, elen);
+		return ;
+	ft_strlcpy(tmp_key, out[*i] + 1, elen);
 	printf("tmpkey\t\"%s\"\n", tmp_key);
 	while (*vl)
 	{
@@ -30,16 +29,22 @@ static char	*sub_val(char *s, t_vl **vl, size_t elen)
 		if (cmp == 0)
 		{
 			val_len = ft_strlen((*vl)->value);
-			out_val = calloc(sizeof(char), val_len + 1);
-			if (!out_val)
-				return (free(tmp_key), NULL);
-			ft_strlcpy(out_val, (*vl)->value, val_len + 1);
-			printf("key_val\t\"%s\"\n", out_val);
-			return (free(tmp_key), out_val);
+			free(out[*i]);
+			out[*i] = ft_calloc(val_len + 1, sizeof(char));
+				if (!out[*i])
+				return (free(tmp_key));
+			ft_strlcpy(out[*i], (*vl)->value, val_len + 1);
+			printf("key_val\t\"%s\"\n", out[*i]);
+			return (free(tmp_key));
 		}
 		*vl = (*vl)->next;
 	}
-	return (free(tmp_key), NULL);
+	printf("No Key\n");
+	free(out[*i]);
+	out[*i] = ft_calloc(1, 1);
+	if (!out[*i])
+		return (free(tmp_key));
+	return (free(tmp_key));
 }
 
 static char	*skip_separators(char *in)
@@ -73,7 +78,6 @@ static size_t	next_elen(char *input, char **out, int i)
 
 static int	store_token(char **out, int *i, char **input, t_vl *vl)
 {
-	char	*tmp;
 	size_t	elen;
 
 	*input = skip_separators(*input);
@@ -90,11 +94,7 @@ static int	store_token(char **out, int *i, char **input, t_vl *vl)
 	}
 	ft_strlcpy(out[*i], *input, elen + 1);
 	if (out[*i][0] == '$' && out[*i][1] && !is_del(out[*i][1]))
-	{
-		tmp = out[*i];
-		free(out[*i]);
-		out[*i] = sub_val(tmp + 1, &vl, elen);
-	}
+		sub_val(out, &vl, elen, i);
 	*input += elen;
 	printf("\n");
 	return (1);

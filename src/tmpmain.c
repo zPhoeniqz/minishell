@@ -85,7 +85,7 @@ int	main(void)
 	data->tl->tokens = NULL;
 	data->tl->ll = 0;
 	varin[0] = "a.out";
-	varin[1] = "name=wasjahuth";
+	varin[1] = "name=wasja";
 	varin[2] = "age=one";
 	//varin[3] = "all=\"$name and $age\"";
 	if (check_legit_var(2, varin))

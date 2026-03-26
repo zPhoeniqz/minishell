@@ -64,6 +64,7 @@ char	*find_val(char *s, t_vl **vl)
 	return (free(tmp_key), NULL);
 }
 
+//TODO cut out varname and fill with value
 char	*dqvar(char *s, t_vl **vl)
 {
 	int		i;
