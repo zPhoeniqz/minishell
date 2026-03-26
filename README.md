@@ -29,7 +29,7 @@ Your shell must implement the following built-in commands:
 - [ ] echo with option -n
 - [ ] cd with only a relative or absolute path
 - [x] pwd with no options
-- [ ] export with no options
+- [x] export with no options
 - [ ] unset with no options
 - [x] env with no options or arguments
 - [ ] exit with no options
