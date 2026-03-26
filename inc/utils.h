@@ -1,26 +1,23 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   pipex.c                                            :+:      :+:    :+:   */
+/*   utils.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: whuth <whuth@student.42berlin.de>          +#+  +:+       +#+        */
+/*   By: pbindl <pbindl@student.42berlin.de>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/12/19 12:14:36 by whuth             #+#    #+#             */
-/*   Updated: 2026/03/16 17:44:44 by pbindl           ###   ########.fr       */
+/*   Created: 2026/03/17 19:41:36 by pbindl            #+#    #+#             */
+/*   Updated: 2026/03/17 20:55:17 by pbindl           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../inc/pipex.h"
+#ifndef UTILS_H
+# define UTILS_H
 
-void	pipex(char *arg, char **envp)
-{
-	char	*cmd[4];
+# include <stddef.h>
 
-	cmd[0] = "/bin/sh";
-	cmd[1] = "-c";
-	cmd[2] = arg;
-	cmd[3] = NULL;
-	execve("/bin/sh", cmd, envp);
-	perror("Error");
-	exit(126);
-}
+void	*ft_realloc(void *ptr, size_t newsize);
+void	arr_destroy(void **arr);
+void	ft_env_destroy(char **envp);
+void	ft_env_make_individual_alloc(char **envp);
+
+#endif

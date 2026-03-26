@@ -62,3 +62,4 @@ dkms.conf
 minishell
 *.swp
 .swp
+build/*

@@ -7,16 +7,19 @@ BUILD_DIR	= build
 LIBFT_DIR	= libft
 LIBFT_A		= libft/libft.a
 
-VPATH		= src:src
-SRC			= tmpmain.c local_var.c token.c token_utils.c token_utils2.c \
-			  utils.c builtins.c path.c signals.c
+TESTS		= tests/entrypoint.c tests/builtins_test.c
+TESTS_OBJ = $(addprefix $(BUILD_DIR)/,$(patsubst tests/%,%,$(TESTS:.c=.o)))
+
+VPATH		= src:tests
+SRC			= builtins.c local_var.c path.c pipex.c prompt.c  signals.c tmpmain.c token.c token_utils2.c token_utils.c utils.c
 OBJ			= $(addprefix $(BUILD_DIR)/,$(SRC:.c=.o))
 
-CC			= cc
+CC			= gcc
 CFLAGS		= -Wall -Werror -Wextra -ggdb
 REMOVE		= rm -rf
 
 LIBFLAGS 	= -lreadline
+
 
 all: $(NAME)
 
@@ -47,5 +50,9 @@ re: fclean all
 
 valgrind: all
 	valgrind --leak-check=full --show-leak-kinds=all --trace-children=yes --track-fds=yes --suppressions=ignore_readline_errors.supp ./$(NAME)
+
+test: $(OBJ) $(TESTS_OBJ) $(LIBFT_A)
+	$(CC) $(CFGLAGS) $(OBJ) $(TESTS_OBJ) $(LIBFT_A) $(LIBFLAGS) -o $(NAME)_tests
+	./$(NAME)_tests
 
 .PHONY: all clean fclean re

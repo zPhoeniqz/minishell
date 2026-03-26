@@ -6,11 +6,12 @@
 /*   By: whuth <whuth@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/26 16:51:36 by whuth             #+#    #+#             */
-/*   Updated: 2026/01/26 17:04:59 by whuth            ###   ########.fr       */
+/*   Updated: 2026/03/19 18:09:39 by pbindl           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/minishell.h"
+#include <stdlib.h>
 
 char	*ft_strcdup(const char *s, char c)
 {
@@ -31,18 +32,49 @@ char	*ft_strcdup(const char *s, char c)
 	copy[i] = 0;
 	return (copy);
 }
-/*/
-int	main(void)
-{
-	char	*s;
-	char	*t;
-	char	del;
 
-	s = "myvar=100";
-	del = '=';
-	t = ft_strcdup(s, del);
-	printf("%s\n", t);
-	free(t);
-	return (1);
+void	*ft_realloc(void *ptr, size_t newsize)
+{
+	void	*out;
+
+	if (!ptr)
+		return (malloc(newsize));
+	if (ptr && newsize == 0)
+		return (free(ptr), ptr);
+	out = malloc(newsize);
+	if (!out)
+		return (NULL);
+	ft_memmove(out, ptr, newsize);
+	return (out);
 }
-//*/
+
+void	arr_destroy(void **arr)
+{
+	char	**oarr;
+
+	if (!arr)
+		return ;
+	oarr = (char **)arr;
+	while (*arr)
+		free(*arr++);
+	free(oarr);
+}
+
+void	ft_env_destroy(char **envp)
+{
+	if (!envp)
+		return ;
+	while (*envp)
+		free(*envp++);
+}
+
+void	ft_env_make_individual_alloc(char **envp)
+{
+	while (*envp)
+	{
+		*envp = ft_strdup(*envp);
+		if (!*envp)
+			return (ft_env_destroy(envp));
+		envp++;
+	}
+}
