@@ -6,12 +6,14 @@
 /*   By: pbindl <pbindl@student.42berlin.de>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/21 18:13:45 by pbindl            #+#    #+#             */
-/*   Updated: 2026/03/26 17:49:41 by pbindl           ###   ########.fr       */
+/*   Updated: 2026/03/26 19:10:37 by pbindl           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "../inc/minishell.h"
 #include "../inc/path.h"
 #include "../inc/prompt.h"
+#include "../inc/utils.h"
 #include "../libft/libft.h"
 #include <stdbool.h>
 #include <stdio.h>
@@ -82,14 +84,32 @@ static bool	export_single(char *varname, char *value)
 }
 
 // pass a negative number to count to make function iterate until NULL element varname or value.
-bool	export(char **varname, char **value, unsigned int count)
+bool	export(int ac, char **av)
 {
-	int	success_count;
+	int		i;
+	char	**split_av;
+	int		failures;
 
-	success_count = 0;
-	while (*varname && *value && count-- != 0)
-		success_count += export_single(*varname++, *value++);
-	return (success_count == 0);
+	failures = 0;
+	i = 0;
+	while (i < ac)
+	{
+		if (!check_legit_var(1, av + i))
+		{
+			failures++;
+			continue ;
+		}
+		split_av = ft_split(av[i], '=');
+		if (!split_av)
+		{
+			failures++;
+			continue ;
+		}
+		failures += export_single(split_av[0], split_av[1]);
+		arr_destroy((void **)split_av);
+		i++;
+	}
+	return (failures == 0);
 }
 
 void	pwd(void)
