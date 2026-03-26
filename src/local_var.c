@@ -6,7 +6,7 @@
 /*   By: whuth <whuth@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/26 16:18:03 by whuth             #+#    #+#             */
-/*   Updated: 2026/01/28 17:29:42 by whuth            ###   ########.fr       */
+/*   Updated: 2026/03/24 18:11:06 by whuth            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,16 +44,17 @@ char	*find_val(char *s, t_vl **vl)
 	char	*out_val;
 
 	i = 0;
-	while (!del_occ(s[i]))
-		++i;
-	if (!(tmp_key = malloc(sizeof(char) * i)))
+	tmp_key = calloc(sizeof(char), (i + 1));
+	if (!tmp_key)
 		return (NULL);
 	ft_strlcpy(tmp_key, s, i);
+	printf("tmpkey\t\"%s\"\n", tmp_key);
 	while (*vl)
 	{
 		if (!ft_strncmp((*vl)->key, tmp_key, i))
 		{
-			if (!(out_val = malloc(sizeof(char) * (ft_strlen((*vl)->value) + 1))))
+			out_val = calloc(sizeof(char), (ft_strlen((*vl)->value) + 1));
+			if (!out_val)
 				return (free(tmp_key), NULL);
 			ft_strlcpy(out_val, (*vl)->value, ft_strlen((*vl)->value) + 1);
 			return (free(tmp_key), out_val);
@@ -69,9 +70,9 @@ char	*dqvar(char *s, t_vl **vl)
 	char	*out;
 	char	*tmp_val;
 
-
 	i = 0;
-	if (!(out = malloc(sizeof(char) * ft_strlen(s))))
+	out = malloc(sizeof(char) * ft_strlen(s));
+	if (!out)
 		return (NULL);
 	while (s[i])
 	{

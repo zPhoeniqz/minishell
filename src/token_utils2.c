@@ -25,7 +25,7 @@ char	**strarr_destruct(char **in, int n)
 	return (NULL);
 }
 
-int	del_occ(char c)
+int	is_del(char c)
 {
 	int	i;
 
@@ -41,5 +41,5 @@ int	del_occ(char c)
 
 int	is_sep(char c)
 {
-	return (del_occ(c) && !is_paren(c));
+	return (is_del(c) && !is_paren(c));
 }
