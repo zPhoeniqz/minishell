@@ -6,7 +6,7 @@
 /*   By: pbindl <pbindl@student.42berlin.de>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/16 17:25:44 by pbindl            #+#    #+#             */
-/*   Updated: 2026/03/19 18:53:36 by pbindl           ###   ########.fr       */
+/*   Updated: 2026/03/26 18:00:12 by pbindl           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,12 +26,15 @@ static int	pwd_test(void)
 
 static int	export_test(void)
 {
-	char	*val;
+	char		*val;
+	static char	*value1 = "42";
+	static char	*value2 = "other_value";
+	static char	*varname = "ANOTHER_TEST";
 
 	printf("Current state of var: %s\n", getenv("ANOTHER_TEST"));
 	printf("Testing 'export'...\n");
 	printf("Test 1... ");
-	export("ANOTHER_TEST", "42");
+	export(&varname, &value1, 1);
 	val = getenv("ANOTHER_TEST");
 	if (!val || ft_strncmp(val, "42", 2) != 0)
 	{
@@ -41,7 +44,7 @@ static int	export_test(void)
 	}
 	printf("successfull\n");
 	printf("Test 2... ");
-	export("ANOTHER_TEST", "other_value");
+	export(&varname, &value2, 1);
 	val = getenv("ANOTHER_TEST");
 	if (!val || ft_strncmp(val, "other_value", 11) != 0)
 	{

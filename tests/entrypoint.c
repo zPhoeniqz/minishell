@@ -6,7 +6,7 @@
 /*   By: pbindl <pbindl@student.42berlin.de>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/16 17:34:02 by pbindl            #+#    #+#             */
-/*   Updated: 2026/03/19 18:53:00 by pbindl           ###   ########.fr       */
+/*   Updated: 2026/03/26 17:33:37 by pbindl           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,10 +20,5 @@ int	main(int argc, char **argv)
 {
 	ft_env_make_individual_alloc(environ);
 	builtins_test(argc, argv);
-	while (*environ)
-	{
-		printf("%s\n", *environ);
-		environ++;
-	}
 	ft_env_destroy(environ);
 }

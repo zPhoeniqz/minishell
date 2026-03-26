@@ -6,7 +6,7 @@
 /*   By: pbindl <pbindl@student.42berlin.de>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/21 18:13:45 by pbindl            #+#    #+#             */
-/*   Updated: 2026/03/19 19:15:52 by pbindl           ###   ########.fr       */
+/*   Updated: 2026/03/26 17:49:41 by pbindl           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,7 +58,7 @@ static void	assign(char **target, char *varname, char *value)
 	ft_memcpy(*target + name_len + 1, value, val_len);
 }
 
-bool	export(char *varname, char *value)
+static bool	export_single(char *varname, char *value)
 {
 	char	**e;
 	size_t	num_vars;
@@ -79,6 +79,17 @@ bool	export(char *varname, char *value)
 	assign(e + num_vars, varname, value);
 	environ = e;
 	return (true);
+}
+
+// pass a negative number to count to make function iterate until NULL element varname or value.
+bool	export(char **varname, char **value, unsigned int count)
+{
+	int	success_count;
+
+	success_count = 0;
+	while (*varname && *value && count-- != 0)
+		success_count += export_single(*varname++, *value++);
+	return (success_count == 0);
 }
 
 void	pwd(void)
