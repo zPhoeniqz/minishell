@@ -6,13 +6,14 @@
 /*   By: pbindl <pbindl@student.42berlin.de>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/07 16:46:31 by pbindl            #+#    #+#             */
-/*   Updated: 2026/01/15 22:49:22 by pbindl           ###   ########.fr       */
+/*   Updated: 2026/03/17 20:34:39 by pbindl           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/path.h"
 #include "../inc/prompt.h"
 #include "../inc/signals.h"
+#include "../inc/utils.h"
 #include "../libft/libft.h"
 #include <linux/limits.h>
 #include <readline/history.h>
@@ -30,18 +31,6 @@ static char	*prompt_create(char **buf, const char *path)
 	free(*buf);
 	*buf = ft_strjoin(path, "> ");
 	return (*buf);
-}
-
-static void	arr_destroy(void **arr)
-{
-	char	**oarr;
-
-	if (!arr)
-		return ;
-	oarr = (char **)arr;
-	while (*arr)
-		free(*arr++);
-	free(oarr);
 }
 
 static bool	run_system_exec(char **argv, char **envp)
@@ -92,6 +81,7 @@ void	prompt_run(char **envp)
 	int		status;
 
 	prompt = NULL;
+	argv = NULL;
 	prompt_create(&prompt, cwd_state(UPDATE));
 	while (true)
 	{
@@ -102,7 +92,7 @@ void	prompt_run(char **envp)
 		if (status == 0)
 			continue ;
 		else if (status == -1)
-			return (free(prompt), cwd_state(FREE), arr_destroy((void **)argv));
+			return (cwd_state(FREE), free(prompt));
 		pid = fork();
 		if (pid == 0)
 		{
@@ -121,7 +111,7 @@ void	prompt_run(char **envp)
 	}
 }
 
-//*/
+/*/
 int	main(int argc, char **argv, char **envp)
 {
 	(void)argc;

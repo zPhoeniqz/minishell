@@ -1,24 +1,23 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_pwd.c                                           :+:      :+:    :+:   */
+/*   utils.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: whuth <whuth@student.42berlin.de>          +#+  +:+       +#+        */
+/*   By: pbindl <pbindl@student.42berlin.de>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/01/12 15:51:39 by whuth             #+#    #+#             */
-/*   Updated: 2026/01/22 14:43:16 by whuth            ###   ########.fr       */
+/*   Created: 2026/03/17 19:41:36 by pbindl            #+#    #+#             */
+/*   Updated: 2026/03/17 20:55:17 by pbindl           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#ifndef UTILS_H
+# define UTILS_H
 
-void	ft_pwd(void)
-{
-	const char	*pwd;
-	const char	*env_pwd;
+# include <stddef.h>
 
-	pwd = "PWD";
-	env_pwd = getenv(pwd);
-	if (env_pwd)
-		ft_printf("%s\n", env_pwd);
-}
+void	*ft_realloc(void *ptr, size_t newsize);
+void	arr_destroy(void **arr);
+void	ft_env_destroy(char **envp);
+void	ft_env_make_individual_alloc(char **envp);
+
+#endif
