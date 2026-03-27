@@ -15,6 +15,8 @@
 
 # include "../libft/libft.h"
 # include "pipex.h"
+# include "builtins.h"
+# include "utils.h"
 # include <stdbool.h>
 
 # define DEL " \t\n\r\v\f"
@@ -25,17 +27,8 @@ typedef struct s_tl
 	int			ll;
 }				t_tl;
 
-typedef struct s_vl
-{
-	bool		dq;
-	char		*key;
-	char		*value;
-	struct s_vl	*next;
-}				t_vl;
-
 typedef struct s_data
 {
-	t_vl		*vl;
 	t_tl		*tl;
 }				t_data;
 
@@ -51,9 +44,5 @@ int				is_sep(char c);
 
 char			*ft_strcdup(const char *s, char c);
 
-void			save_var(char *s, t_vl **var_list);
-char			*find_val(char *s, t_vl **vl);
-
 void			free_token_list(t_tl *tl);
-void			free_var_list(t_vl *var_list);
 #endif
