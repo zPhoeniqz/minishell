@@ -12,35 +12,7 @@
 
 #include "../inc/minishell.h"
 
-static char	*sub_val(char *s, t_vl **vl, size_t elen)
-{
-	int		cmp;
-	int		val_len;
-	char	*tmp_key;
-	char	*out_val;
-
-	tmp_key = calloc(sizeof(char), elen + 1);
-	if (!tmp_key)
-		return (NULL);
-	ft_strlcpy(tmp_key, s, elen);
-	printf("tmpkey\t\"%s\"\n", tmp_key);
-	while (*vl)
-	{
-		cmp = ft_strncmp((*vl)->key, tmp_key, elen);
-		if (cmp == 0)
-		{
-			val_len = ft_strlen((*vl)->value);
-			out_val = calloc(sizeof(char), val_len + 1);
-			if (!out_val)
-				return (free(tmp_key), NULL);
-			ft_strlcpy(out_val, (*vl)->value, val_len + 1);
-			printf("key_val\t\"%s\"\n", out_val);
-			return (free(tmp_key), out_val);
-		}
-		*vl = (*vl)->next;
-	}
-	return (free(tmp_key), NULL);
-}
+extern char	**environ;
 
 static char	*skip_separators(char *in)
 {
@@ -51,6 +23,7 @@ static char	*skip_separators(char *in)
 	return (in);
 }
 
+//*
 static size_t	next_elen(char *input, char **out, int i)
 {
 	size_t	elen;
@@ -70,10 +43,45 @@ static size_t	next_elen(char *input, char **out, int i)
 	}
 	return (elen);
 }
+//*/
 
-static int	store_token(char **out, int *i, char **input, t_vl *vl)
+static void sub_val(char **out, size_t elen, int index)
 {
-	char	*tmp;
+	int		cmp;
+	int		val_len;
+	char	*tmp_key;
+
+	tmp_key = ft_calloc(sizeof(char), elen + 1);
+	if (!tmp_key)
+		return ;
+	ft_strlcpy(tmp_key, out[index] + 1, elen);
+	printf("tmpkey\t\"%s\"\n", tmp_key);
+	while (*environ)
+	{
+		cmp = ft_strncmp(*environ, tmp_key, elen - 1);
+		if (cmp == 0)
+		{
+			printf("found matching key\n");
+			val_len = ft_strlen(*environ) - elen + 1;
+			free(out[index]);
+			out[index] = ft_calloc(val_len, sizeof(char));
+			if (!out)
+				return (free(tmp_key));
+			printf("lenval\t%d\n", val_len);
+			ft_strlcpy(out[index], *environ + elen, val_len);
+			printf("new val\t%s\n", out[index]);
+			return (free(tmp_key));
+		}
+		++environ;
+	}
+	printf("no matching key\n");
+	free(out[index]);
+	out[index] = ft_calloc(1, 1);
+	return (free(tmp_key));
+}
+
+static int	store_token(char **out, int *i, char **input)
+{
 	size_t	elen;
 
 	*input = skip_separators(*input);
@@ -90,11 +98,7 @@ static int	store_token(char **out, int *i, char **input, t_vl *vl)
 	}
 	ft_strlcpy(out[*i], *input, elen + 1);
 	if (out[*i][0] == '$' && out[*i][1] && !is_del(out[*i][1]))
-	{
-		tmp = out[*i];
-		free(out[*i]);
-		out[*i] = sub_val(tmp + 1, &vl, elen);
-	}
+		sub_val(out, elen, *i);
 	*input += elen;
 	printf("\n");
 	return (1);
@@ -114,7 +118,7 @@ void	gettokens(char *input, t_data *data)
 	printf("elc\t%d\n\n", elcount);
 	while (i < elcount)
 	{
-		if (!store_token(out, &i, &input, data->vl))
+		if (!store_token(out, &i, &input))
 			return ;
 		++i;
 	}
