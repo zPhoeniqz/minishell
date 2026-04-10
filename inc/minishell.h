@@ -6,7 +6,7 @@
 /*   By: whuth <whuth@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/19 12:01:21 by whuth             #+#    #+#             */
-/*   Updated: 2026/03/16 18:11:53 by pbindl           ###   ########.fr       */
+/*   Updated: 2026/03/26 19:51:48 by pbindl           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,7 @@ typedef struct s_data
 	t_tl		*tl;
 }				t_data;
 
-int				check_legit_var(int ac, char **av);
+int				check_legit_var(char *av);
 void			gettokens(char *input, t_data *data);
 int				is_paren(char c);
 unsigned int	count_elts(const char *s);

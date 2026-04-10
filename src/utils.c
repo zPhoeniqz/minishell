@@ -6,12 +6,15 @@
 /*   By: whuth <whuth@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/26 16:51:36 by whuth             #+#    #+#             */
-/*   Updated: 2026/03/19 18:09:39 by pbindl           ###   ########.fr       */
+/*   Updated: 2026/04/10 18:43:06 by pbindl           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/minishell.h"
 #include <stdlib.h>
+#include <string.h>
+
+extern char	**environ;
 
 char	*ft_strcdup(const char *s, char c)
 {
@@ -77,4 +80,66 @@ void	ft_env_make_individual_alloc(char **envp)
 			return (ft_env_destroy(envp));
 		envp++;
 	}
+}
+
+int	find_env(const char *name)
+{
+	size_t	lname;
+	int		out;
+
+	lname = ft_strlen(name);
+	out = 0;
+	while (environ[out])
+	{
+		if (ft_strncmp(name, environ[out], lname) == 0)
+			return (out);
+		out++;
+	}
+	return (-1);
+}
+
+static char	*make_envstr(const char *name, const char *value)
+{
+	char	*envstr;
+
+	envstr = ft_calloc(ft_strlen(name) + ft_strlen(value) + 2, 1);
+	if (!envstr)
+		return (NULL);
+	memcpy(envstr, name, ft_strlen(name));
+	envstr[ft_strlen(name)] = '=';
+	memcpy(envstr + ft_strlen(name) + 1, value, ft_strlen(value));
+	return (envstr);
+}
+
+int	ft_setenv(const char *name, const char *value, bool rewrite)
+{
+	char	*valuestart;
+	int		idx;
+	char	*envstr;
+	char	**newenv;
+
+	idx = find_env(name);
+	if (idx != -1 && !rewrite)
+		return (0);
+	if (idx != -1)
+	{
+		valuestart = environ[idx] + ft_strlen(name) + 1;
+		if (ft_strlen(valuestart) >= ft_strlen(value))
+			return (ft_memmove(valuestart, value, ft_strlen(value)), 0);
+		envstr = make_envstr(name, value);
+		if (!envstr)
+			return (-1);
+		environ[idx] = envstr;
+		return (0);
+	}
+	idx = 0;
+	while (environ[idx])
+		idx++;
+	newenv = ft_calloc((idx + 2), sizeof(char *));
+	if (!newenv)
+		return (-1);
+	memcpy(newenv, environ, idx * sizeof(char *));
+	newenv[idx] = make_envstr(name, value);
+	environ = newenv;
+	return (-1 * (newenv[idx] == NULL));
 }

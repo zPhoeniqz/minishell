@@ -6,7 +6,7 @@
 /*   By: whuth <whuth@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/26 16:18:03 by whuth             #+#    #+#             */
-/*   Updated: 2026/03/26 18:33:17 by pbindl           ###   ########.fr       */
+/*   Updated: 2026/03/26 19:51:35 by pbindl           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,21 +18,19 @@ static int	key_char(char c)
 			&& c <= '9') || c == '_');
 }
 
-int	check_legit_var(int ac, char **av)
+int	check_legit_var(char *av)
 {
 	int	i;
 
-	if (ac != 2)
-		return (0);
 	i = 0;
-	if ((av[1][i] >= '0' && av[1][i] <= '9') || av[1][i] == '=')
+	if ((*av >= '0' && *av <= '9') || *av == '=')
 		return (0);
-	while (av[1][i] && av[1][i] != '=')
+	while (*av && *av != '=')
 	{
-		if (!key_char(av[1][i++]))
+		if (!key_char(av[i++]))
 			return (0);
 	}
-	if (av[1][i] != '=')
+	if (av[i] != '=')
 		return (0);
 	return (1);
 }

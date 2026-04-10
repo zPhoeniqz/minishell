@@ -6,7 +6,7 @@
 /*   By: pbindl <pbindl@student.42berlin.de>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/21 18:13:45 by pbindl            #+#    #+#             */
-/*   Updated: 2026/03/26 19:10:37 by pbindl           ###   ########.fr       */
+/*   Updated: 2026/04/10 19:08:41 by pbindl           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,8 @@ static int	find_var(char *varname)
 	size_t	len;
 	int		i;
 
+	if (!varname)
+		return (-2);
 	len = ft_strlen(varname);
 	i = 0;
 	while (environ[i])
@@ -83,19 +85,19 @@ static bool	export_single(char *varname, char *value)
 	return (true);
 }
 
-// pass a negative number to count to make function iterate until NULL element varname or value.
-bool	export(int ac, char **av)
+bool	oldexport(int ac, char **av)
 {
 	int		i;
 	char	**split_av;
 	int		failures;
 
 	failures = 0;
-	i = 0;
-	while (i < ac)
+	i = -1;
+	while (++i < ac)
 	{
-		if (!check_legit_var(1, av + i))
+		if (ft_isdigit(av[i][0]))
 		{
+			printf("Not legit var: %s\n", av[i]);
 			failures++;
 			continue ;
 		}
@@ -107,7 +109,42 @@ bool	export(int ac, char **av)
 		}
 		failures += export_single(split_av[0], split_av[1]);
 		arr_destroy((void **)split_av);
-		i++;
+	}
+	return (failures == 0);
+}
+
+static bool	check_varname(const char *name)
+{
+	if (!ft_isalpha(*name) && *name != '_')
+		return (false);
+	while (*name)
+	{
+		if (!ft_isalnum(*name) && *name != '_')
+			return (false);
+		name++;
+	}
+	return (true);
+}
+
+bool	export(int ac, char **av)
+{
+	char	**var;
+	int		failures;
+
+	if (ac == 0)
+		return (true);
+	failures = 0;
+	while (ac > 0)
+	{
+		var = ft_split(*av, '=');
+		if (var && var[1] && check_varname(*var))
+			failures += ft_setenv(var[0], var[1], true);
+		else
+			failures -= 1;
+		if (var)
+			arr_destroy((void **)var);
+		ac--;
+		av++;
 	}
 	return (failures == 0);
 }
@@ -117,42 +154,25 @@ void	pwd(void)
 	printf("%s\n", cwd_state(READ));
 }
 
-// TODO handle cases where envname is NULL or envname cant be found
-bool	unset(char ***envp, char *envname)
+bool	unset(char *envname)
 {
-	int		envcount;
-	char	*target;
-	char	**current_envp;
-	char	**new_envp;
-	int		i;
+	int	idx;
+	int	num_vars;
+	int	i;
 
-	envcount = 0;
-	target = NULL;
-	current_envp = *envp;
-	while (current_envp[envcount])
+	idx = find_var(envname);
+	if (idx < 0)
+		return (true);
+	num_vars = 0;
+	while (environ[num_vars])
+		num_vars++;
+	free(environ[idx]);
+	i = idx;
+	while (i < num_vars - 2)
 	{
-		if (strncmp(current_envp[envcount], envname, ft_strlen(envname)) == 0)
-			target = current_envp[envcount];
-		envcount++;
-	}
-	if (!target)
-		return (false);
-	new_envp = ft_calloc(envcount - 1, sizeof(char *));
-	if (!new_envp)
-		return (false);
-	printf("target; %s\n", target);
-	i = 0;
-	while (i < envcount - 1)
-	{
-		if (ft_strncmp(current_envp[i], target, ft_strlen(target)) == 0)
-		{
-			printf("found target\n");
-			new_envp[i] = current_envp[envcount - 1];
-		}
-		else
-			new_envp[i] = current_envp[i];
+		environ[i] = environ[i + 1];
 		i++;
 	}
-	*envp = new_envp;
+	environ[num_vars - 2] = 0;
 	return (true);
 }
