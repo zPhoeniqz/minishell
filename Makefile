@@ -11,7 +11,7 @@ TESTS		= tests/entrypoint.c tests/builtins_test.c
 TESTS_OBJ = $(addprefix $(BUILD_DIR)/,$(patsubst tests/%,%,$(TESTS:.c=.o)))
 
 VPATH		= src:tests
-SRC			= builtins.c path.c pipex.c prompt.c  signals.c tmpmain.c token.c token_utils2.c token_utils.c utils.c
+SRC			= builtins.c path.c pipex.c pipex_utils.c gnl.c gnl_utils.c prompt.c  signals.c tmpmain.c token.c token_utils2.c token_utils.c utils.c
 OBJ			= $(addprefix $(BUILD_DIR)/,$(SRC:.c=.o))
 
 CC			= gcc

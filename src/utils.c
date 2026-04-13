@@ -40,7 +40,7 @@ void	*ft_realloc(void *ptr, size_t newsize)
 	if (!ptr)
 		return (malloc(newsize));
 	if (ptr && newsize == 0)
-		return (free(ptr), ptr);
+		return (ptr);
 	out = malloc(newsize);
 	if (!out)
 		return (NULL);
