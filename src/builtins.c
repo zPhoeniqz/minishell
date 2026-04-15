@@ -6,7 +6,7 @@
 /*   By: pbindl <pbindl@student.42berlin.de>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/21 18:13:45 by pbindl            #+#    #+#             */
-/*   Updated: 2026/04/10 19:08:41 by pbindl           ###   ########.fr       */
+/*   Updated: 2026/04/15 15:13:09 by pbindl           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,19 +19,20 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
-extern char	**environ;
-
-void	env(char **envp)
+void	env(int ac, char **av, char **envp)
 {
 	char	**e;
 
+	(void)ac;
+	(void)av;
 	e = envp;
 	while (*e)
 		printf("%s\n", *e++);
 }
 
-static int	find_var(char *varname)
+static int	find_var(char **envp, char *varname)
 {
 	size_t	len;
 	int		i;
@@ -40,77 +41,13 @@ static int	find_var(char *varname)
 		return (-2);
 	len = ft_strlen(varname);
 	i = 0;
-	while (environ[i])
+	while (envp[i])
 	{
-		if (ft_strncmp(environ[i], varname, len) == 0)
+		if (ft_strncmp(envp[i], varname, len) == 0)
 			return (i);
 		i++;
 	}
 	return (-1);
-}
-
-static void	assign(char **target, char *varname, char *value)
-{
-	size_t	name_len;
-	size_t	val_len;
-
-	name_len = ft_strlen(varname);
-	val_len = ft_strlen(value);
-	*target = ft_calloc(name_len + 1 + val_len + 1, 1);
-	ft_memcpy(*target, varname, name_len);
-	(*target)[name_len] = '=';
-	ft_memcpy(*target + name_len + 1, value, val_len);
-}
-
-static bool	export_single(char *varname, char *value)
-{
-	char	**e;
-	size_t	num_vars;
-	int		idx;
-
-	idx = find_var(varname);
-	if (idx != -1)
-	{
-		free(environ[idx]);
-		assign(environ + idx, varname, value);
-		return (true);
-	}
-	num_vars = 0;
-	while (environ[num_vars])
-		num_vars++;
-	e = ft_calloc(num_vars + 2, sizeof(char *));
-	ft_memcpy(e, environ, num_vars * sizeof(char *));
-	assign(e + num_vars, varname, value);
-	environ = e;
-	return (true);
-}
-
-bool	oldexport(int ac, char **av)
-{
-	int		i;
-	char	**split_av;
-	int		failures;
-
-	failures = 0;
-	i = -1;
-	while (++i < ac)
-	{
-		if (ft_isdigit(av[i][0]))
-		{
-			printf("Not legit var: %s\n", av[i]);
-			failures++;
-			continue ;
-		}
-		split_av = ft_split(av[i], '=');
-		if (!split_av)
-		{
-			failures++;
-			continue ;
-		}
-		failures += export_single(split_av[0], split_av[1]);
-		arr_destroy((void **)split_av);
-	}
-	return (failures == 0);
 }
 
 static bool	check_varname(const char *name)
@@ -126,53 +63,104 @@ static bool	check_varname(const char *name)
 	return (true);
 }
 
-bool	export(int ac, char **av)
+int	export(int ac, char **av, char **envp)
 {
 	char	**var;
 	int		failures;
 
-	if (ac == 0)
+	if (ac <= 1)
 		return (true);
 	failures = 0;
-	while (ac > 0)
+	av++;
+	while (ac > 1)
 	{
 		var = ft_split(*av, '=');
 		if (var && var[1] && check_varname(*var))
-			failures += ft_setenv(var[0], var[1], true);
+			failures += ft_setenv(envp, var[0], var[1], true);
 		else
-			failures -= 1;
+			failures += 1;
 		if (var)
 			arr_destroy((void **)var);
 		ac--;
 		av++;
 	}
-	return (failures == 0);
+	return (failures);
 }
 
-void	pwd(void)
+void	pwd(int ac, char **av, char **envp)
 {
+	(void)ac;
+	(void)av;
+	(void)envp;
 	printf("%s\n", cwd_state(READ));
 }
 
-bool	unset(char *envname)
+static void	unset_single(char **envp, char *envname)
 {
 	int	idx;
 	int	num_vars;
 	int	i;
 
-	idx = find_var(envname);
+	idx = find_var(envp, envname);
 	if (idx < 0)
-		return (true);
+		return ;
 	num_vars = 0;
-	while (environ[num_vars])
+	while (envp[num_vars])
 		num_vars++;
-	free(environ[idx]);
+	free(envp[idx]);
 	i = idx;
 	while (i < num_vars - 2)
 	{
-		environ[i] = environ[i + 1];
+		envp[i] = envp[i + 1];
 		i++;
 	}
-	environ[num_vars - 2] = 0;
-	return (true);
+	envp[num_vars - 2] = 0;
+}
+
+int	unset(int ac, char **av, char **envp)
+{
+	int	i;
+
+	i = 1;
+	while (i < ac)
+		unset_single(envp, av[i++]);
+	return (0);
+}
+
+int	echo(int ac, char **av, char **envp)
+{
+	int		i;
+	bool	nl;
+
+	(void)envp;
+	if (ac <= 1)
+	{
+		printf("\n");
+		return (0);
+	}
+	nl = true;
+	i = 1;
+	if (ft_strncmp(av[1], "-n", ft_strlen(av[1])) == 0)
+		nl = false;
+	i++;
+	while (i < ac - 1)
+		printf("%s ", av[i++]);
+	printf("%s", av[i]);
+	if (nl)
+		printf("\n");
+	return (0);
+}
+
+int	cd(int ac, char **av, char **envp)
+{
+	if (ac != 2)
+		return (1);
+	if (chdir(av[1]) < 0)
+	{
+		perror(NULL);
+		return (1);
+	}
+	ft_setenv(envp, "PWD", av[1], true);
+	cwd_state(UPDATE);
+	return (0);
 }
