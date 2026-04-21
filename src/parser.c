@@ -6,7 +6,7 @@
 /*   By: pbindl <pbindl@student.42berlin.de>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/21 12:51:02 by pbindl            #+#    #+#             */
-/*   Updated: 2026/04/21 19:40:46 by pbindl           ###   ########.fr       */
+/*   Updated: 2026/04/21 22:53:32 by pbindl           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,8 @@
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
+
+#define HEREDOC_FILENAME "/tmp/.minishell/__HEREDOC__"
 
 typedef struct s_parsed_item	t_parsed_item;
 
@@ -31,13 +33,15 @@ typedef struct s_command
 typedef enum e_cmdtype
 {
 	Command,
+	Heredoc,
 	File,
 }								t_cmdtype;
 
 typedef union u_parsed_content
 {
 	char						*path;
-	t_command					*command;
+	char						*delim;
+	t_command					command;
 }								t_parsed_content;
 
 /*
@@ -50,6 +54,11 @@ typedef struct s_parsed_item
 	t_parsed_content			content;
 }								t_parsed_item;
 
+void							parsed_item_destroy(t_parsed_item *item);
+
+t_command						*cmd_init(void);
+void							cmd_destroy(t_command *cmd);
+
 static void	seterr(char *problematic_cmd)
 {
 	errno = EINVAL;
@@ -61,16 +70,66 @@ static bool	ft_isspace(char c)
 	return (ft_strchr(" \f\n\r\t\v", c) != NULL);
 }
 
+static size_t	word_len(char *s)
+{
+	size_t	i;
+
+	i = 0;
+	while (s[i] && !ft_isspace(s[i]))
+		i++;
+	return (i);
+}
+
+/*
+ * Returns an alloc'd copy of the next word in `s`. "Word" means anything from s
+ * to either the next whitespace character or NUL, or anything inside the next
+ * quotes. If `expand_variables`is set to true, variables (starting with a $)
+ * will be expanded. Standard rules for variable expansion apply.
+ * */
+static char						*get_next_word(char *s, bool expand_variables);
+
 static bool						add_arg(t_command *target, char *start,
 									char *end);
 
-static bool	expand(char **s)
+/*
+ * Rules for expansion
+ * 1. Expand variables everywhere except for
+ *		- strings within single quotes
+ *		- delimiters in the "<<" redirection
+ * */
+static bool	expand(t_command *cmd, char **s)
 {
-	char	*cursor;
+	static int	herdoc_count = 0;
+	char		*cursor;
+	char		*dst;
+	bool		expand;
 
+	expand = true;
 	while (1)
 	{
 		cursor = ft_strchr(*s, '<');
+		if (cursor)
+		{
+			if (!cmd->input)
+			{
+				cmd->input = ft_calloc(1, sizeof(t_parsed_item));
+				if (!cmd->input)
+					return (cmd_destroy(cmd), perror(NULL), false);
+			}
+			cmd->input->type = File;
+			dst = cmd->input->content.path;
+			cursor++;
+			if (*cursor == '<')
+			{
+				cmd->input->type = Heredoc;
+				dst = cmd->input->content.delim;
+				expand = false;
+				cursor++;
+			}
+			dst = get_next_word(cursor, expand);
+			if (!dst)
+				return (cmd_destroy(cmd), seterr(*s), false);
+		}
 		if (!cursor)
 			cursor = ft_strchr(*s, '>');
 		if (!cursor)
@@ -86,7 +145,7 @@ static t_command	*parse_single(char *s, size_t size)
 	char		*cursor;
 	char		*next;
 
-	out = malloc(sizeof(t_command));
+	out = cmd_init();
 	if (!out)
 		return (perror(NULL), NULL);
 	out->argv = NULL;
@@ -103,8 +162,8 @@ static t_command	*parse_single(char *s, size_t size)
 				return (free(out), seterr(cursor), NULL);
 			if (!add_arg(out, cursor + 1, next - 1))
 				return (free(out), NULL);
-			if (*cursor == '"' && !expand(out->argv + out->argc - 1))
-				return (free(out), NULL);
+			if (*cursor == '"' && !expand(out, out->argv + out->argc - 1))
+				return (arr_destroy((void **)out->argv), free(out), NULL);
 			cursor = next;
 			continue ;
 		}
