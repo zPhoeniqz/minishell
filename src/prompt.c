@@ -6,7 +6,11 @@
 /*   By: pbindl <pbindl@student.42berlin.de>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/07 16:46:31 by pbindl            #+#    #+#             */
+<<<<<<< HEAD
+/*   Updated: 2026/04/26 18:02:25 by whuth            ###   ########.fr       */
+=======
 /*   Updated: 2026/04/15 14:43:32 by pbindl           ###   ########.fr       */
+>>>>>>> master
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,43 +77,6 @@ static int	readcommand(char ***target_buf, char *prompt)
 
 // TODO error handling of readline, ft_split, etc.
 // TODO handle executables that are in PATH
-void	prompt_run(char **envp)
-{
-	char	*prompt;
-	char	**argv;
-	pid_t	pid;
-	int		status;
-
-	prompt = NULL;
-	argv = NULL;
-	prompt_create(&prompt, cwd_state(UPDATE));
-	while (true)
-	{
-		addsighandler(SIGINT, signals_forward_int, 0);
-		if (ft_strncmp(cwd_state(READ), prompt, ft_strlen(prompt) - 2) != 0)
-			prompt_create(&prompt, cwd_state(READ));
-		status = readcommand(&argv, prompt);
-		if (status == 0)
-			continue ;
-		else if (status == -1)
-			return (cwd_state(FREE), free(prompt));
-		pid = fork();
-		if (pid == 0)
-		{
-			addsighandler(SIGINT, SIG_DFL, 0);
-			if (!ft_strchr(argv[0], '/'))
-				run_system_exec(argv, envp);
-			else
-				execve(argv[0], argv, envp);
-		}
-		else
-		{
-			addsighandler(SIGINT, SIG_IGN, 0);
-			waitpid(pid, &status, 0);
-		}
-		arr_destroy((void **)argv);
-	}
-}
 
 /*/
 int	main(int argc, char **argv, char **envp)
