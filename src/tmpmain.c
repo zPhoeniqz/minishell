@@ -6,7 +6,7 @@
 /*   By: whuth <whuth@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/28 15:56:57 by whuth             #+#    #+#             */
-/*   Updated: 2026/01/28 15:59:07 by whuth            ###   ########.fr       */
+/*   Updated: 2026/03/24 18:18:32 by whuth            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,53 +28,24 @@ void	free_token_list(t_tl *tl)
 	free(tl);
 }
 
-void	free_var_list(t_vl *var_list)
-{
-	t_vl	*tmp;
-
-	while (var_list)
-	{
-		tmp = var_list->next;
-		free(var_list->key);
-		free(var_list->value);
-		free(var_list);
-		var_list = tmp;
-	}
-}
-
 void	free_all(t_data *data)
 {
 	if (!data)
 		return ;
-	free_var_list(data->vl);
 	free_token_list(data->tl);
 	free(data);
-}
-
-/*/
-static void	print_var_list(t_vl *var_list)
-{
-	t_vl	*tmp;
-
-	tmp = var_list;
-	while (tmp)
-	{
-		printf("\nkey:\t%s\nvalue:\t%s\ndq:\t%d\n\n", tmp->key, tmp->value,
-			tmp->dq);
-		tmp = tmp->next;
-	}
 }
 
 int	main(void)
 {
 	t_data	*data;
 	char	*input;
-	char	*varin[2];
+	char	*varname[2];
+	char	*value[2];
 
 	data = malloc(sizeof(t_data));
 	if (!data)
 		return (1);
-	data->vl = NULL;
 	data->tl = malloc(sizeof(*data->tl));
 	if (!data->tl)
 	{
@@ -83,17 +54,16 @@ int	main(void)
 	}
 	data->tl->tokens = NULL;
 	data->tl->ll = 0;
-	
-	varin[0] = "a.out";
-	varin[1] = "name=wasjahuth";
-	if (check_legit_var(2, varin))
-		save_var(varin[1], &data->vl);
-
-	input = "say my name:$name";
+	varname[0] = "name";
+	varname[1] = "age";
+	value[0] = "wasja";
+	value[1] = "one";
+	export(varname, value, 2);
+	input = "Im $name and Im $age , ok you are $all";
 	gettokens(input, data);
 	for (int i = 0; i < data->tl->ll; ++i)
-		printf("%s\n", data->tl->tokens[i]);
+		printf("out\t\"%s\"\n", data->tl->tokens[i]);
 	free_all(data);
 	return (0);
 }
-/*/
+//*/
