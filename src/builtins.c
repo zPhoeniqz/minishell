@@ -6,133 +6,161 @@
 /*   By: pbindl <pbindl@student.42berlin.de>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/21 18:13:45 by pbindl            #+#    #+#             */
-/*   Updated: 2026/03/26 17:49:41 by pbindl           ###   ########.fr       */
+/*   Updated: 2026/04/15 15:13:09 by pbindl           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "../inc/minishell.h"
 #include "../inc/path.h"
 #include "../inc/prompt.h"
+#include "../inc/utils.h"
 #include "../libft/libft.h"
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
-extern char	**environ;
-
-void	env(char **envp)
+void	env(int ac, char **av, char **envp)
 {
 	char	**e;
 
+	(void)ac;
+	(void)av;
 	e = envp;
 	while (*e)
 		printf("%s\n", *e++);
 }
 
-static int	find_var(char *varname)
+static int	find_var(char **envp, char *varname)
 {
 	size_t	len;
 	int		i;
 
+	if (!varname)
+		return (-2);
 	len = ft_strlen(varname);
 	i = 0;
-	while (environ[i])
+	while (envp[i])
 	{
-		if (ft_strncmp(environ[i], varname, len) == 0)
+		if (ft_strncmp(envp[i], varname, len) == 0)
 			return (i);
 		i++;
 	}
 	return (-1);
 }
 
-static void	assign(char **target, char *varname, char *value)
+static bool	check_varname(const char *name)
 {
-	size_t	name_len;
-	size_t	val_len;
-
-	name_len = ft_strlen(varname);
-	val_len = ft_strlen(value);
-	*target = ft_calloc(name_len + 1 + val_len + 1, 1);
-	ft_memcpy(*target, varname, name_len);
-	(*target)[name_len] = '=';
-	ft_memcpy(*target + name_len + 1, value, val_len);
-}
-
-static bool	export_single(char *varname, char *value)
-{
-	char	**e;
-	size_t	num_vars;
-	int		idx;
-
-	idx = find_var(varname);
-	if (idx != -1)
+	if (!ft_isalpha(*name) && *name != '_')
+		return (false);
+	while (*name)
 	{
-		free(environ[idx]);
-		assign(environ + idx, varname, value);
-		return (true);
+		if (!ft_isalnum(*name) && *name != '_')
+			return (false);
+		name++;
 	}
-	num_vars = 0;
-	while (environ[num_vars])
-		num_vars++;
-	e = ft_calloc(num_vars + 2, sizeof(char *));
-	ft_memcpy(e, environ, num_vars * sizeof(char *));
-	assign(e + num_vars, varname, value);
-	environ = e;
 	return (true);
 }
 
-// pass a negative number to count to make function iterate until NULL element varname or value.
-bool	export(char **varname, char **value, unsigned int count)
+int	export(int ac, char **av, char **envp)
 {
-	int	success_count;
+	char	**var;
+	int		failures;
 
-	success_count = 0;
-	while (*varname && *value && count-- != 0)
-		success_count += export_single(*varname++, *value++);
-	return (success_count == 0);
+	if (ac <= 1)
+		return (true);
+	failures = 0;
+	av++;
+	while (ac > 1)
+	{
+		var = ft_split(*av, '=');
+		if (var && var[1] && check_varname(*var))
+			failures += ft_setenv(envp, var[0], var[1], true);
+		else
+			failures += 1;
+		if (var)
+			arr_destroy((void **)var);
+		ac--;
+		av++;
+	}
+	return (failures);
 }
 
-void	pwd(void)
+void	pwd(int ac, char **av, char **envp)
 {
+	(void)ac;
+	(void)av;
+	(void)envp;
 	printf("%s\n", cwd_state(READ));
 }
 
-// TODO handle cases where envname is NULL or envname cant be found
-bool	unset(char ***envp, char *envname)
+static void	unset_single(char **envp, char *envname)
 {
-	int		envcount;
-	char	*target;
-	char	**current_envp;
-	char	**new_envp;
-	int		i;
+	int	idx;
+	int	num_vars;
+	int	i;
 
-	envcount = 0;
-	target = NULL;
-	current_envp = *envp;
-	while (current_envp[envcount])
+	idx = find_var(envp, envname);
+	if (idx < 0)
+		return ;
+	num_vars = 0;
+	while (envp[num_vars])
+		num_vars++;
+	free(envp[idx]);
+	i = idx;
+	while (i < num_vars - 2)
 	{
-		if (strncmp(current_envp[envcount], envname, ft_strlen(envname)) == 0)
-			target = current_envp[envcount];
-		envcount++;
-	}
-	if (!target)
-		return (false);
-	new_envp = ft_calloc(envcount - 1, sizeof(char *));
-	if (!new_envp)
-		return (false);
-	printf("target; %s\n", target);
-	i = 0;
-	while (i < envcount - 1)
-	{
-		if (ft_strncmp(current_envp[i], target, ft_strlen(target)) == 0)
-		{
-			printf("found target\n");
-			new_envp[i] = current_envp[envcount - 1];
-		}
-		else
-			new_envp[i] = current_envp[i];
+		envp[i] = envp[i + 1];
 		i++;
 	}
-	*envp = new_envp;
-	return (true);
+	envp[num_vars - 2] = 0;
+}
+
+int	unset(int ac, char **av, char **envp)
+{
+	int	i;
+
+	i = 1;
+	while (i < ac)
+		unset_single(envp, av[i++]);
+	return (0);
+}
+
+int	echo(int ac, char **av, char **envp)
+{
+	int		i;
+	bool	nl;
+
+	(void)envp;
+	if (ac <= 1)
+	{
+		printf("\n");
+		return (0);
+	}
+	nl = true;
+	i = 1;
+	if (ft_strncmp(av[1], "-n", ft_strlen(av[1])) == 0)
+		nl = false;
+	i++;
+	while (i < ac - 1)
+		printf("%s ", av[i++]);
+	printf("%s", av[i]);
+	if (nl)
+		printf("\n");
+	return (0);
+}
+
+int	cd(int ac, char **av, char **envp)
+{
+	if (ac != 2)
+		return (1);
+	if (chdir(av[1]) < 0)
+	{
+		perror(NULL);
+		return (1);
+	}
+	ft_setenv(envp, "PWD", av[1], true);
+	cwd_state(UPDATE);
+	return (0);
 }

@@ -24,17 +24,15 @@ int	check_legit_var(int ac, char **av)
 {
 	int	i;
 
-	if (ac != 2)
-		return (0);
 	i = 0;
-	if ((av[1][i] >= '0' && av[1][i] <= '9') || av[1][i] == '=')
+	if ((*av >= '0' && *av <= '9') || *av == '=')
 		return (0);
-	while (av[1][i] && av[1][i] != '=')
+	while (*av && *av != '=')
 	{
-		if (!key_char(av[1][i++]))
+		if (!key_char(av[i++]))
 			return (0);
 	}
-	if (av[1][i] != '=')
+	if (av[i] != '=')
 		return (0);
 	return (1);
 }
