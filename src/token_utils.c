@@ -12,114 +12,23 @@
 
 #include "../inc/minishell.h"
 
-static void	update_quotes(char c, unsigned int *dquote, unsigned int *squote)
-{
-	if (c == '"' && !(*squote))
-		*dquote = !(*dquote);
-	else if (c == '\'' && !(*dquote))
-		*squote = !(*squote);
+t_token *token_init(t_ttype type, char *token, t_token *next_token) {
+  t_token *out = malloc(sizeof(t_token));
+  if (!out)
+    return NULL;
+  out->type = type;
+  out->token = ft_strdup(token);
+  if (!out->token && token)
+    return (free(out), NULL);
+  out->next_token = next_token;
+  return out;
 }
 
-static void	step_count(const char **s, unsigned int *sw,
-		unsigned int *tokencount, unsigned int in_quote)
-{
-	if (!in_quote && is_paren(**s))
-	{
-		(*tokencount)++;
-		*sw = 0;
-		(*s)++;
-		return ;
-	}
-	if (!in_quote && is_sep(**s))
-	{
-		*sw = 0;
-		(*s)++;
-		return ;
-	}
-	if (!in_quote && **s == '$')
-	{
-		(*tokencount)++;
-		*sw = 1;
-		(*s)++;
-		while (**s && !is_sep(**s) && !is_paren(**s) && **s != '$')
-			(*s)++;
-		*sw = 0;
-		return ;
-	}
-	if (!(*sw))
-	{
-		*sw = 1;
-		(*tokencount)++;
-	}
-	(*s)++;
+void token_destroy(t_token *token) {
+  free(token->token);
+  free(token);
 }
 
-unsigned int	count_tokens(const char *s)
-{
-	unsigned int	sw;
-	unsigned int	dquote;
-	unsigned int	squote;
-	unsigned int	tokencount;
-
-	sw = 0;
-	dquote = 0;
-	squote = 0;
-	tokencount = 0;
-	while (*s)
-	{
-		update_quotes(*s, &dquote, &squote);
-		step_count(&s, &sw, &tokencount, (dquote || squote));
-	}
-	return (tokencount);
-}
-
-int	check_quote(char *s, size_t *elen)
-{
-	int		i;
-	char	c;
-
-	i = 0;
-	if (s[i] == '\"' || s[i] == '\'')
-	{
-		c = s[i];
-		while (s[++i])
-		{
-			if (s[i] == c)
-			{
-				*elen = i + 1;
-				return (1);
-			}
-		}
-		return (0);
-	}
-	return (1);
-}
-
-size_t	token_len(const char *s)
-{
-	size_t			i;
-	unsigned int	dquote;
-	unsigned int	squote;
-
-	if (!s || !*s)
-		return (0);
-	if (is_paren(*s))
-		return (1);
-	i = 0;
-	dquote = 0;
-	squote = 0;
-	while (s[i])
-	{
-		if (s[i] == '"' && !squote)
-			dquote = !dquote;
-		else if (s[i] == '\'' && !dquote)
-			squote = !squote;
-		if (!dquote && !squote)
-		{
-			if (is_sep(s[i]) || is_paren(s[i]) || (s[i] == '$' && i != 0))
-				break ;
-		}
-		i++;
-	}
-	return (i);
+bool ft_isdelim(char c) {
+  return ft_isspace(c) || c == '|' || c == '>' || c == '<' || c == '\0';
 }
