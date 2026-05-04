@@ -10,136 +10,127 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../inc/minishell.h"
+#include "../libft/libft.h"
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 
-char	*ft_strcdup(const char *s, char c)
-{
-	int		i;
-	char	*copy;
+void *ft_realloc(void *ptr, size_t newsize) {
+  void *out;
 
-	i = 0;
-	while (s[i] != c && s[i])
-		++i;
-	if (!(copy = malloc(sizeof(char) * i + 1)))
-		return (NULL);
-	i = 0;
-	while (s[i] != c)
-	{
-		copy[i] = s[i];
-		++i;
-	}
-	copy[i] = 0;
-	return (copy);
+  if (!ptr)
+    return (malloc(newsize));
+  if (ptr && newsize == 0)
+    return (ptr);
+  out = malloc(newsize);
+  if (!out)
+    return (NULL);
+  ft_memmove(out, ptr, newsize);
+  return (out);
 }
 
-void	*ft_realloc(void *ptr, size_t newsize)
-{
-	void	*out;
+void arr_destroy(void **arr) {
+  char **oarr;
 
-	if (!ptr)
-		return (malloc(newsize));
-	if (ptr && newsize == 0)
-		return (ptr);
-	out = malloc(newsize);
-	if (!out)
-		return (NULL);
-	ft_memmove(out, ptr, newsize);
-	return (out);
+  if (!arr)
+    return;
+  oarr = (char **)arr;
+  while (*arr)
+    free(*arr++);
+  free(oarr);
 }
 
-void	arr_destroy(void **arr)
-{
-	char	**oarr;
+char **dup_env(char **envp) {
+  size_t n = 0;
+  while (envp[n])
+    n++;
+  char **out = ft_calloc(n, sizeof(char *));
+  if (!out)
+    return NULL;
 
-	if (!arr)
-		return ;
-	oarr = (char **)arr;
-	while (*arr)
-		free(*arr++);
-	free(oarr);
+  n = 0;
+  while (envp[n]) {
+    out[n] = ft_strdup(envp[n]);
+    if (!out[n])
+      return (arr_destroy((void **)out), NULL);
+    n++;
+  }
+
+  return out;
 }
 
-void	ft_env_destroy(char **envp)
-{
-	if (!envp)
-		return ;
-	while (*envp)
-		free(*envp++);
+int find_env(const char **envp, const char *name) {
+  size_t lname;
+  int out;
+
+  lname = ft_strlen(name);
+  out = 0;
+  while (envp[out]) {
+    if (ft_strncmp(name, envp[out], lname) == 0)
+      return (out);
+    out++;
+  }
+  return (-1);
 }
 
-void	ft_env_make_individual_alloc(char **envp)
-{
-	while (*envp)
-	{
-		*envp = ft_strdup(*envp);
-		if (!*envp)
-			return (ft_env_destroy(envp));
-		envp++;
-	}
+static char *make_envstr(const char *name, const char *value) {
+  char *envstr;
+
+  envstr = ft_calloc(ft_strlen(name) + ft_strlen(value) + 2, 1);
+  if (!envstr)
+    return (NULL);
+  memcpy(envstr, name, ft_strlen(name));
+  envstr[ft_strlen(name)] = '=';
+  memcpy(envstr + ft_strlen(name) + 1, value, ft_strlen(value));
+  return (envstr);
 }
 
-int	find_env(const char **envp, const char *name)
-{
-	size_t	lname;
-	int		out;
+int ft_setenv(char **envp, const char *name, const char *value, bool rewrite) {
+  char *valuestart;
+  int idx;
+  char *envstr;
+  char **newenv;
 
-	lname = ft_strlen(name);
-	out = 0;
-	while (envp[out])
-	{
-		if (ft_strncmp(name, envp[out], lname) == 0)
-			return (out);
-		out++;
-	}
-	return (-1);
+  idx = find_env((const char **)envp, name);
+  if (idx != -1 && !rewrite)
+    return (0);
+  if (idx != -1) {
+    valuestart = envp[idx] + ft_strlen(name) + 1;
+    if (ft_strlen(valuestart) >= ft_strlen(value))
+      return (ft_memmove(valuestart, value, ft_strlen(value)), 0);
+    envstr = make_envstr(name, value);
+    if (!envstr)
+      return (1);
+    free(envp[idx]);
+    envp[idx] = envstr;
+    return (0);
+  }
+  idx = 0;
+  while (envp[idx])
+    idx++;
+  newenv = ft_calloc((idx + 2), sizeof(char *));
+  if (!newenv)
+    return (1);
+  memcpy(newenv, envp, idx * sizeof(char *));
+  newenv[idx] = make_envstr(name, value);
+  arr_destroy((void **)envp);
+  envp = newenv;
+  return (newenv[idx] == NULL);
 }
 
-static char	*make_envstr(const char *name, const char *value)
-{
-	char	*envstr;
+char *ft_getenv(char **envp, const char *name) {
+  size_t len = ft_strlen(name);
 
-	envstr = ft_calloc(ft_strlen(name) + ft_strlen(value) + 2, 1);
-	if (!envstr)
-		return (NULL);
-	memcpy(envstr, name, ft_strlen(name));
-	envstr[ft_strlen(name)] = '=';
-	memcpy(envstr + ft_strlen(name) + 1, value, ft_strlen(value));
-	return (envstr);
+  while (*envp) {
+    if (ft_strncmp(*envp, name, len) == 0)
+      return ft_strchr(*envp, '=') + 1;
+    envp++;
+  }
+
+  return NULL;
 }
 
-int	ft_setenv(char **envp, const char *name, const char *value, bool rewrite)
-{
-	char	*valuestart;
-	int		idx;
-	char	*envstr;
-	char	**newenv;
-
-	idx = find_env((const char **)envp, name);
-	if (idx != -1 && !rewrite)
-		return (0);
-	if (idx != -1)
-	{
-		valuestart = envp[idx] + ft_strlen(name) + 1;
-		if (ft_strlen(valuestart) >= ft_strlen(value))
-			return (ft_memmove(valuestart, value, ft_strlen(value)), 0);
-		envstr = make_envstr(name, value);
-		if (!envstr)
-			return (1);
-		free(envp[idx]);
-		envp[idx] = envstr;
-		return (0);
-	}
-	idx = 0;
-	while (envp[idx])
-		idx++;
-	newenv = ft_calloc((idx + 2), sizeof(char *));
-	if (!newenv)
-		return (1);
-	memcpy(newenv, envp, idx * sizeof(char *));
-	newenv[idx] = make_envstr(name, value);
-	arr_destroy((void **)envp);
-	envp = newenv;
-	return (newenv[idx] == NULL);
+bool ft_isspace(char c) {
+  return c == ' ' || c == '\f' || c == '\n' || c == '\r' || c == '\t' ||
+         c == '\v';
 }

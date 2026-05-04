@@ -10,231 +10,172 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "../inc/minishell.h"
 #include "../inc/utils.h"
 #include "../libft/libft.h"
 #include <errno.h>
-#include <stdbool.h>
-#include <stddef.h>
-#include <stdio.h>
 #include <stdlib.h>
+#include <stdio.h>
+#include <stdbool.h>
+#include <string.h>
+#include <unistd.h>
 
-#define HEREDOC_FILENAME "/tmp/.minishell/__HEREDOC__"
+// replaces the dollar-annotated variable names in s with their corresponding
+// value or a blank. s MUST be heap-allocated.
+bool expand_str(char **envp, char **s) {
+  bool squoted = false;
+  char *out = NULL;
+  if (!*s)
+    return (false);
+  int i = 0;
+  while ((*s)[i]) {
+    if ((*s)[i] == '\'')
+      squoted = !squoted;
+    if (!squoted && (*s)[i] == '$') {
+      int end = i + 1;
+      while (!ft_isdelim((*s)[end]))
+        end++;
+      char c = (*s)[end];
+      (*s)[end] = 0;
+      char *value = ft_getenv(envp, *s + i + 1);
+      if (!value)
+        value = " ";
+      (*s)[end] = c;
+      size_t nsize = i + ft_strlen(value) + ft_strlen(*s + end) + 1;
+      out = ft_calloc(nsize, 1);
+      if (!out)
+        return (free(*s), false);
+      ft_memcpy(out, *s, i);
+      ft_strlcat(out, value, nsize);
+      ft_strlcat(out, *s + end, nsize);
+      free(*s);
+      *s = out;
+    }
+    i++;
+  }
 
-typedef struct s_parsed_item	t_parsed_item;
-
-typedef struct s_command
-{
-	int							argc;
-	char						**argv;
-	t_parsed_item				*input;
-	t_parsed_item				*output;
-}								t_command;
-
-typedef enum e_cmdtype
-{
-	Command,
-	Heredoc,
-	File,
-}								t_cmdtype;
-
-typedef union u_parsed_content
-{
-	char						*path;
-	char						*delim;
-	t_command					command;
-}								t_parsed_content;
-
-/*
- * parsed item is either a fully parsed command (variables expanded,
-	quotes removed etc),
- * or a file used in a redirection.*/
-typedef struct s_parsed_item
-{
-	t_cmdtype					type;
-	t_parsed_content			content;
-}								t_parsed_item;
-
-void							parsed_item_destroy(t_parsed_item *item);
-
-t_command						*cmd_init(void);
-void							cmd_destroy(t_command *cmd);
-
-static void	seterr(char *problematic_cmd)
-{
-	errno = EINVAL;
-	perror(problematic_cmd);
+  return true;
 }
 
-static bool	ft_isspace(char c)
-{
-	return (ft_strchr(" \f\n\r\t\v", c) != NULL);
+static void syntaxerr(char invalid) {
+  ft_putstr_fd("Syntax error near '", STDERR_FILENO);
+  ft_putchar_fd(invalid, STDERR_FILENO);
+  ft_putendl_fd("'", STDERR_FILENO);
+  errno = EINVAL;
 }
 
-static size_t	word_len(char *s)
-{
-	size_t	i;
-
-	i = 0;
-	while (s[i] && !ft_isspace(s[i]))
-		i++;
-	return (i);
+static t_ttype determine_ttype(char **cursor) {
+  char *cur = *cursor;
+  t_ttype out = Argument;
+  if (cur[0] == '<' && cur[1] == '<') {
+    out = Heredoc;
+    cur++;
+  } else if (cur[0] == '<')
+    out = InFile;
+  else if (cur[0] == '>' && cur[1] == '>') {
+    out = OutFileAppend;
+    cur++;
+  } else if (cur[0] == '>')
+    out = OutFile;
+  else if (cur[0] == '|')
+    out = Pipe;
+  cur += out != Argument;
+  *cursor = cur;
+  return out;
 }
 
-/*
- * Returns an alloc'd copy of the next word in `s`. "Word" means anything from s
- * to either the next whitespace character or NUL, or anything inside the next
- * quotes. If `expand_variables`is set to true, variables (starting with a $)
- * will be expanded. Standard rules for variable expansion apply.
- * */
-static char						*get_next_word(char *s, bool expand_variables);
+static t_token *get_next_token(char **envp, char **cursor) {
+  while (ft_isspace(**cursor))
+    (*cursor)++;
+  if (!**cursor)
+    return NULL;
+  t_ttype type = determine_ttype(cursor);
+  if (type == Pipe)
+    return token_init(Pipe, "|", NULL);
+  char *cur = *cursor;
+  while (ft_isspace(*cur))
+    cur++;
+  bool dquoted = *cur == '"';
+  bool squoted = *cur == '\'';
 
-static bool						add_arg(t_command *target, char *start,
-									char *end);
+  cur += squoted || dquoted;
 
-/*
- * Rules for expansion
- * 1. Expand variables everywhere except for
- *		- strings within single quotes
- *		- delimiters in the "<<" redirection
- * */
-static bool	expand(t_command *cmd, char **s)
-{
-	static int	herdoc_count = 0;
-	char		*cursor;
-	char		*dst;
-	bool		expand;
+  int i = 0;
+  while (cur[i]) {
+    if (ft_isdelim(cur[i]) && !dquoted && !squoted)
+      break;
+    if (cur[i] == '"' && !squoted) {
+      dquoted = false;
+      break;
+    }
+    if (cur[i] == '\'' && !dquoted) {
+      squoted = false;
+      break;
+    }
+    i++;
+  }
 
-	expand = true;
-	while (1)
-	{
-		cursor = ft_strchr(*s, '<');
-		if (cursor)
-		{
-			if (!cmd->input)
-			{
-				cmd->input = ft_calloc(1, sizeof(t_parsed_item));
-				if (!cmd->input)
-					return (cmd_destroy(cmd), perror(NULL), false);
-			}
-			cmd->input->type = File;
-			dst = cmd->input->content.path;
-			cursor++;
-			if (*cursor == '<')
-			{
-				cmd->input->type = Heredoc;
-				dst = cmd->input->content.delim;
-				expand = false;
-				cursor++;
-			}
-			dst = get_next_word(cursor, expand);
-			if (!dst)
-				return (cmd_destroy(cmd), seterr(*s), false);
-		}
-		if (!cursor)
-			cursor = ft_strchr(*s, '>');
-		if (!cursor)
-			cursor = ft_strchr(*s, '$');
-		if (!cursor)
-			break ;
-	}
+  if (squoted || dquoted || i == 0)
+    return (syntaxerr('"' * dquoted + '\'' * squoted +
+                      '>' * (type == OutFile || type == OutFileAppend) +
+                      '<' * (type == InFile || type == Heredoc)),
+            NULL);
+
+  char c = cur[i];
+  cur[i] = 0;
+  t_token *out = token_init(type, cur, NULL);
+  if (out->type != Heredoc && !expand_str(envp, &out->token))
+    return (free(out), NULL);
+  cur[i] = c;
+  *cursor = cur + i + (cur[i] == '"' || cur[i] == '\'');
+  errno = 0;
+  return out;
 }
 
-static t_command	*parse_single(char *s, size_t size)
-{
-	t_command	*out;
-	char		*cursor;
-	char		*next;
+t_tl *get_tokens(char **envp, char *src) {
+  char **cursor = &src;
+  t_tl *out = tl_init();
+  if (!out)
+    return NULL;
+  out->tokens = get_next_token(envp, cursor);
+  t_token *cur_token = out->tokens;
+  bool cur_is_pipe = false;
+  while (cur_token) {
+    cur_is_pipe = cur_token->type == Pipe;
+    out->ll++;
+    cur_token->next_token = get_next_token(envp, cursor);
+    cur_token = cur_token->next_token;
+  }
 
-	out = cmd_init();
-	if (!out)
-		return (perror(NULL), NULL);
-	out->argv = NULL;
-	out->argc = 0;
-	cursor = s - 1;
-	while (++cursor < s + size)
-	{
-		if (ft_isspace(*cursor))
-			continue ;
-		else if (*cursor == '"' || *cursor == '\'')
-		{
-			next = ft_strchr(cursor + 1, *cursor);
-			if (!next)
-				return (free(out), seterr(cursor), NULL);
-			if (!add_arg(out, cursor + 1, next - 1))
-				return (free(out), NULL);
-			if (*cursor == '"' && !expand(out, out->argv + out->argc - 1))
-				return (arr_destroy((void **)out->argv), free(out), NULL);
-			cursor = next;
-			continue ;
-		}
-		next = cursor;
-		while (*next != '"' && *next != '\'' && !ft_isspace(*next) && next < s
-			+ size)
-			next++;
-		if (!add_arg(out, cursor, next - 1))
-			return (free(out), NULL);
-		if (!expand(out->argv + out->argc - 1))
-			return (free(out), NULL);
-		cursor = next - 1;
-	}
-	return (out);
+  if (cur_is_pipe)
+    syntaxerr('|');
+  if (errno != 0)
+    return (tl_destroy(out), NULL);
+
+  return out;
 }
 
-static t_command	**cmd_append(t_command **arr, char *s, size_t strsize)
-{
-	size_t		arrsize;
-	t_command	**narr;
+/*/
+int main(int argc, char **argv, char **envp) {
+  if (argc != 2)
+    return 1;
 
-	arrsize = 0;
-	while (arr[arrsize])
-		arrsize++;
-	narr = ft_realloc(arr, (arrsize + 2) * sizeof(t_command *));
-	if (!arr)
-		return (free(arr), perror(NULL), NULL);
-	arr = narr;
-	arr[arrsize + 1] = NULL;
-	arr[arrsize] = parse_single(s, strsize);
-	if (arr[arrsize])
-		return (free(arr), NULL);
-	return (arr);
+  t_tl *tokens = get_tokens(envp, argv[1]);
+  if (!tokens)
+    return 1;
+
+  t_token *cur_token = tokens->tokens;
+  for (int i = 0; i < tokens->ll; i++) {
+
+    printf("== Token %p ==\n", cur_token);
+    printf("Type: %c\n", cur_token->type);
+    printf("Content: `%s`\n", cur_token->token);
+    printf("Next Token: %p\n\n", cur_token->next_token);
+
+    t_token *next_token = cur_token->next_token;
+    token_destroy(cur_token);
+    cur_token = next_token;
+  }
+  free(tokens);
 }
-
-/*
- * Parses the given string s.
- * If successful: Returns a list of t_command, terminated by a NULL.
- * If not successful: Prints error to stderr, returns NULL.
- * */
-t_command	**parse(char *s, char **infile, char **outfile)
-{
-	t_command	**out;
-	int			i;
-	bool		quotes;
-	int			cmd_start;
-	int			cmd_count;
-
-	cmd_count = 0;
-	cmd_start = 0;
-	quotes = false;
-	out = NULL;
-	i = 0;
-	while (s[i])
-	{
-		if (s[i] == '"' || s[i] == '\'')
-			quotes = !quotes;
-		else if (s[i] == '|' && !quotes)
-		{
-			out = cmd_append(out, s + cmd_start, i);
-			if (!out)
-				return (NULL);
-			cmd_start = i + 1;
-			cmd_count++;
-		}
-		i++;
-	}
-	if (quotes)
-		return (free(out), seterr(s + cmd_start), NULL);
-	out = cmd_append(out, s + cmd_start, ft_strlen(s + cmd_start));
-	if (!out)
-		return (NULL);
-	return (out);
-}
+//*/
