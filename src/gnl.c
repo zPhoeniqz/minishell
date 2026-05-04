@@ -6,11 +6,11 @@
 /*   By: whuth <whuth@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/17 17:08:53 by whuth             #+#    #+#             */
-/*   Updated: 2026/04/08 14:07:41 by whuth            ###   ########.fr       */
+/*   Updated: 2026/05/03 22:13:47 by whuth            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "gnl.h"
+#include "../inc/minishell.h"
 
 void	ft_free(char **arr)
 {
@@ -78,8 +78,8 @@ char	*get_next_line(int fd)
 		return (NULL);
 	if (fd < 0)
 	{
-		if (-(fd) - 1 <= MAX_FD)
-			ft_free(&buffer[-(fd) - 1]);
+		if (-(fd)-1 <= MAX_FD)
+			ft_free(&buffer[-(fd)-1]);
 		return (NULL);
 	}
 	if (MAX_FD < fd)
