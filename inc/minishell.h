@@ -56,6 +56,5 @@ bool ft_isdelim(char c);
 // replaces the dollar-annotated variable names in s with their corresponding
 // value or a blank. s MUST be heap-allocated.
 bool expand_str(char **envp, char **s);
-
-t_tl *get_tokens(char **envp, char *src);
+t_tl *parse(char **envp, char *src);
 #endif

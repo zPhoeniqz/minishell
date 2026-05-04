@@ -18,6 +18,7 @@
 
 void *ft_realloc(void *ptr, size_t newsize);
 void arr_destroy(void **arr);
+char **dup_env(char **envp);
 void ft_env_destroy(char **envp);
 void ft_env_make_individual_alloc(char **envp);
 int find_env(const char **envp, const char *name);

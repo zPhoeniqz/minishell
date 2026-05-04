@@ -132,7 +132,7 @@ static t_token *get_next_token(char **envp, char **cursor) {
   return out;
 }
 
-t_tl *get_tokens(char **envp, char *src) {
+t_tl *parse(char **envp, char *src) {
   char **cursor = &src;
   t_tl *out = tl_init();
   if (!out)

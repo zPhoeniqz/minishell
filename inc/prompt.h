@@ -11,10 +11,9 @@
 /* ************************************************************************** */
 
 #ifndef PROMPT_H
-# define PROMPT_H
+#define PROMPT_H
 
-# include <stdbool.h>
-
-void	prompt_run(char **envp);
+char *prompt_create(char **buf, const char *path);
+int read_cmd(char **target_buf, char *prompt);
 
 #endif
