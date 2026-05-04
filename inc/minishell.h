@@ -6,10 +6,7 @@
 /*   By: whuth <whuth@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/19 12:01:21 by whuth             #+#    #+#             */
-<<<<<<< Updated upstream
-=======
 /*   Updated: 2026/04/26 17:55:51 by whuth            ###   ########.fr       */
->>>>>>> Stashed changes
 /*   Updated: 2026/03/26 19:51:48 by pbindl           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
@@ -23,28 +20,6 @@
 #include "utils.h"
 #include <stdbool.h>
 
-<<<<<<< Updated upstream
-typedef struct s_tl
-{
-	char		**tokens;
-	int			ll;
-}				t_tl;
-
-typedef struct s_data
-{
-	t_tl		*tl;
-}				t_data;
-
-int				check_legit_var(char *av);
-void			gettokens(char *input, t_data *data);
-int				is_paren(char c);
-unsigned int	count_tokens(const char *s);
-int				check_quote(char *s, size_t *elen);
-int				is_del(char c);
-size_t			token_len(const char *s);
-char			**strarr_destruct(char **in, int n);
-int				is_sep(char c);
-=======
 typedef enum e_ttype {
   Heredoc = 'H',
   InFile = 'I',
@@ -70,11 +45,11 @@ typedef struct s_data {
   char **envp;
 } t_data;
 
-char **strarr_destruct(char **in, int n);
->>>>>>> Stashed changes
-
 t_token *token_init(t_ttype type, char *token, t_token *next_token);
 void token_destroy(t_token *token);
+
+t_tl *tl_init();
+void tl_destroy(t_tl *tl);
 
 bool ft_isdelim(char c);
 

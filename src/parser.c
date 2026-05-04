@@ -13,10 +13,12 @@
 #include "../inc/minishell.h"
 #include "../inc/utils.h"
 #include "../libft/libft.h"
+#include <errno.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdbool.h>
 #include <string.h>
+#include <unistd.h>
 
 // replaces the dollar-annotated variable names in s with their corresponding
 // value or a blank. s MUST be heap-allocated.
@@ -53,6 +55,13 @@ bool expand_str(char **envp, char **s) {
   }
 
   return true;
+}
+
+static void syntaxerr(char invalid) {
+  ft_putstr_fd("Syntax error near '", STDERR_FILENO);
+  ft_putchar_fd(invalid, STDERR_FILENO);
+  ft_putendl_fd("'", STDERR_FILENO);
+  errno = EINVAL;
 }
 
 static t_ttype determine_ttype(char **cursor) {
@@ -107,7 +116,10 @@ static t_token *get_next_token(char **envp, char **cursor) {
   }
 
   if (squoted || dquoted || i == 0)
-    return NULL;
+    return (syntaxerr('"' * dquoted + '\'' * squoted +
+                      '>' * (type == OutFile || type == OutFileAppend) +
+                      '<' * (type == InFile || type == Heredoc)),
+            NULL);
 
   char c = cur[i];
   cur[i] = 0;
@@ -116,22 +128,30 @@ static t_token *get_next_token(char **envp, char **cursor) {
     return (free(out), NULL);
   cur[i] = c;
   *cursor = cur + i + (cur[i] == '"' || cur[i] == '\'');
+  errno = 0;
   return out;
 }
 
 t_tl *get_tokens(char **envp, char *src) {
   char **cursor = &src;
-  t_tl *out = malloc(sizeof(t_tl));
+  t_tl *out = tl_init();
   if (!out)
     return NULL;
-  out->ll = 0;
   out->tokens = get_next_token(envp, cursor);
   t_token *cur_token = out->tokens;
+  bool cur_is_pipe = false;
   while (cur_token) {
+    cur_is_pipe = cur_token->type == Pipe;
     out->ll++;
     cur_token->next_token = get_next_token(envp, cursor);
     cur_token = cur_token->next_token;
   }
+
+  if (cur_is_pipe)
+    syntaxerr('|');
+  if (errno != 0)
+    return (tl_destroy(out), NULL);
+
   return out;
 }
 

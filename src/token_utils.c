@@ -29,6 +29,26 @@ void token_destroy(t_token *token) {
   free(token);
 }
 
+t_tl *tl_init() {
+  t_tl *out = malloc(sizeof(t_tl));
+  if (!out)
+    return NULL;
+  out->tokens = NULL;
+  out->ll = 0;
+  return out;
+}
+
+void tl_destroy(t_tl *tl) {
+  t_token *cur = tl->tokens;
+  while (cur) {
+    t_token *ncur = cur->next_token;
+    token_destroy(cur);
+    cur = ncur;
+  }
+
+  free(tl);
+}
+
 bool ft_isdelim(char c) {
   return ft_isspace(c) || c == '|' || c == '>' || c == '<' || c == '\0';
 }
