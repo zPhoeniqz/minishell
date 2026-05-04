@@ -6,7 +6,7 @@
 /*   By: pbindl <pbindl@student.42berlin.de>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/07 16:46:31 by pbindl            #+#    #+#             */
-/*   Updated: 2026/04/15 14:43:32 by pbindl           ###   ########.fr       */
+/*   Updated: 2026/05/04 15:47:04 by whuth            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,13 +26,14 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
-static char	*prompt_create(char **buf, const char *path)
+char	*prompt_create(char **buf, const char *path)
 {
 	free(*buf);
 	*buf = ft_strjoin(path, "> ");
 	return (*buf);
 }
 
+/*
 static bool	run_system_exec(char **argv, char **envp)
 {
 	char	*cur_file_path;
@@ -53,8 +54,8 @@ static bool	run_system_exec(char **argv, char **envp)
 	arr_destroy((void **)opath);
 	return (false);
 }
-
-static int	readcommand(char ***target_buf, char *prompt)
+*/
+int	readcommand(char ***target_buf, char *prompt)
 {
 	char	*input;
 	char	**argv;

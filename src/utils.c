@@ -6,33 +6,14 @@
 /*   By: whuth <whuth@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/26 16:51:36 by whuth             #+#    #+#             */
-/*   Updated: 2026/04/15 15:11:41 by pbindl           ###   ########.fr       */
+/*   Updated: 2026/05/03 22:20:22 by whuth            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../inc/minishell.h"
+#include "../libft/libft.h"
+#include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
-
-char	*ft_strcdup(const char *s, char c)
-{
-	int		i;
-	char	*copy;
-
-	i = 0;
-	while (s[i] != c && s[i])
-		++i;
-	if (!(copy = malloc(sizeof(char) * i + 1)))
-		return (NULL);
-	i = 0;
-	while (s[i] != c)
-	{
-		copy[i] = s[i];
-		++i;
-	}
-	copy[i] = 0;
-	return (copy);
-}
 
 void	*ft_realloc(void *ptr, size_t newsize)
 {
@@ -61,23 +42,26 @@ void	arr_destroy(void **arr)
 	free(oarr);
 }
 
-void	ft_env_destroy(char **envp)
+char	**dup_env(char **envp)
 {
-	if (!envp)
-		return ;
-	while (*envp)
-		free(*envp++);
-}
+	size_t	n;
+	char	**out;
 
-void	ft_env_make_individual_alloc(char **envp)
-{
-	while (*envp)
+	n = 0;
+	while (envp[n])
+		n++;
+	out = ft_calloc(n, sizeof(char *));
+	if (!out)
+		return (NULL);
+	n = 0;
+	while (envp[n])
 	{
-		*envp = ft_strdup(*envp);
-		if (!*envp)
-			return (ft_env_destroy(envp));
-		envp++;
+		out[n] = ft_strdup(envp[n]);
+		if (!out[n])
+			return (arr_destroy((void **)out), NULL);
+		n++;
 	}
+	return (out);
 }
 
 int	find_env(const char **envp, const char *name)
@@ -142,4 +126,24 @@ int	ft_setenv(char **envp, const char *name, const char *value, bool rewrite)
 	arr_destroy((void **)envp);
 	envp = newenv;
 	return (newenv[idx] == NULL);
+}
+
+char	*ft_getenv(char **envp, const char *name)
+{
+	size_t	len;
+
+	len = ft_strlen(name);
+	while (*envp)
+	{
+		if (ft_strncmp(*envp, name, len) == 0)
+			return (ft_strchr(*envp, '=') + 1);
+		envp++;
+	}
+	return (NULL);
+}
+
+bool	ft_isspace(char c)
+{
+	return (c == ' ' || c == '\f' || c == '\n' || c == '\r' || c == '\t'
+		|| c == '\v');
 }

@@ -6,7 +6,7 @@
 /*   By: whuth <whuth@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/19 12:01:21 by whuth             #+#    #+#             */
-/*   Updated: 2026/04/28 19:23:34 by whuth            ###   ########.fr       */
+/*   Updated: 2026/05/04 15:13:57 by whuth            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,9 +15,13 @@
 
 # include "../libft/libft.h"
 # include "builtins.h"
-# include "pipex.h"
+# include "gnl.h"
+# include "path.h"
+# include "prompt.h"
+# include "signals.h"
 # include "utils.h"
 # include <stdbool.h>
+# include <stdio.h>
 
 # define DEL " \t\n\r\v\f"
 
@@ -50,16 +54,17 @@ typedef struct s_data
 	char			**envp;
 }					t_data;
 
-void				gettokens(char *input, t_data *data);
-int					is_paren(char c);
-unsigned int		count_tokens(const char *s);
-int					check_quote(char *s, size_t *elen);
-int					is_del(char c);
-size_t				token_len(const char *s);
-char				**strarr_destruct(char **in, int n);
-int					is_sep(char c);
+typedef struct s_stage
+{
+	char			**argv;
+	int				argc;
+	char			*in_file;
+	char			*out_file;
+	char			*heredoc;
+	bool			append;
+}					t_stage;
 
-char				*ft_strcdup(const char *s, char c);
+t_tl				*parse(char **envp, char *src);
+int					exec(t_data *data);
 
-void				free_token_list(t_tl *tl);
-# endim
+#endif
