@@ -6,7 +6,7 @@
 /*   By: pbindl <pbindl@student.42berlin.de>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/21 12:51:02 by pbindl            #+#    #+#             */
-/*   Updated: 2026/05/04 15:44:09 by whuth            ###   ########.fr       */
+/*   Updated: 2026/05/04 16:15:37 by whuth            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,8 +20,7 @@
 
 static bool	ft_isdelim(char c)
 {
-	return (ft_isspace(c) || c == '|' || c == '<' || c == '>' || c == '"'
-		|| c == '\'' || c == '\0');
+	return (ft_isspace(c) || c == '|' || c == '>' || c == '<' || c == '\0');
 }
 
 bool	expand_str(char **envp, char **s)
@@ -97,19 +96,19 @@ static t_ttype	determine_ttype(char **cursor)
 	return (out);
 }
 
-static t_token	*token_init(t_ttype type, const char *str, t_token *next)
+static t_token	*token_init(t_ttype type, char *token, t_token *next_token)
 {
-	t_token	*tok;
+	t_token	*out;
 
-	tok = ft_calloc(1, sizeof(t_token));
-	if (!tok)
+	out = malloc(sizeof(t_token));
+	if (!out)
 		return (NULL);
-	tok->token = ft_strdup(str);
-	if (!tok->token)
-		return (free(tok), NULL);
-	tok->type = type;
-	tok->next_token = next;
-	return (tok);
+	out->type = type;
+	out->token = ft_strdup(token);
+	if (!out->token && token)
+		return (free(out), NULL);
+	out->next_token = next_token;
+	return (out);
 }
 
 static t_token	*get_next_token(char **envp, char **cursor)
