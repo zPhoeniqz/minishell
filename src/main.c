@@ -50,8 +50,10 @@ int main() {
         exit_code = exec(&data);
       tl_destroy(data.tokenlist);
     }
+    exit_code = exit_code % 256;
   }
   free(prompt);
   cwd_state(FREE);
   arr_destroy((void **)data.envp);
+  return exit_code;
 }
