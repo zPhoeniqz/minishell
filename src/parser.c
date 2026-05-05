@@ -121,9 +121,12 @@ static t_token *get_next_token(char **envp, char **cursor, int last_exit_code) {
     i++;
   }
 
-  if (squoted || dquoted || i == 0)
-    return (syntaxerr('"' * dquoted + '\'' * squoted +
-                      '>' * (type == OutFile || type == OutFileAppend) +
+  if (squoted)
+    return (syntaxerr('\''), NULL);
+  else if (dquoted)
+    return (syntaxerr('"'), NULL);
+  else if (i == 0)
+    return (syntaxerr('>' * (type == OutFile || type == OutFileAppend) +
                       '<' * (type == InFile || type == Heredoc)),
             NULL);
 
