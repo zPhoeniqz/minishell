@@ -39,10 +39,8 @@ int main() {
     status = read_cmd(&input, prompt);
     if (status == 0)
       continue;
-    else if (status == -1) {
-      cwd_state(FREE);
-      free(prompt);
-    }
+    else if (status == -1)
+      break;
 
     data.tokenlist = parse(data.envp, input, exit_code);
     if (errno != 0)

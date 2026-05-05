@@ -139,6 +139,8 @@ static t_token *get_next_token(char **envp, char **cursor, int last_exit_code) {
 }
 
 t_tl *parse(char **envp, char *src, int last_exit_code) {
+  if (!src)
+    return NULL;
   char **cursor = &src;
   t_tl *out = tl_init();
   if (!out)
