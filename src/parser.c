@@ -22,7 +22,8 @@
 
 // replaces the dollar-annotated variable names in s with their corresponding
 // value or a blank. s MUST be heap-allocated.
-bool expand_str(char **envp, char **s) {
+bool expand_str(char **envp, char **s, int last_exit_code) {
+  char *value;
   bool squoted = false;
   char *out = NULL;
   if (!*s)
@@ -33,14 +34,19 @@ bool expand_str(char **envp, char **s) {
       squoted = !squoted;
     if (!squoted && (*s)[i] == '$') {
       int end = i + 1;
-      while (!ft_isdelim((*s)[end]))
+      if ((*s)[end] != '?') {
+        while (!ft_isdelim((*s)[end]))
+          end++;
+        char c = (*s)[end];
+        (*s)[end] = 0;
+        value = ft_getenv(envp, *s + i + 1);
+        if (!value)
+          value = " ";
+        (*s)[end] = c;
+      } else {
+        value = ft_itoa(last_exit_code);
         end++;
-      char c = (*s)[end];
-      (*s)[end] = 0;
-      char *value = ft_getenv(envp, *s + i + 1);
-      if (!value)
-        value = " ";
-      (*s)[end] = c;
+      }
       size_t nsize = i + ft_strlen(value) + ft_strlen(*s + end) + 1;
       out = ft_calloc(nsize, 1);
       if (!out)
@@ -84,7 +90,7 @@ static t_ttype determine_ttype(char **cursor) {
   return out;
 }
 
-static t_token *get_next_token(char **envp, char **cursor) {
+static t_token *get_next_token(char **envp, char **cursor, int last_exit_code) {
   while (ft_isspace(**cursor))
     (*cursor)++;
   if (!**cursor)
@@ -124,7 +130,7 @@ static t_token *get_next_token(char **envp, char **cursor) {
   char c = cur[i];
   cur[i] = 0;
   t_token *out = token_init(type, cur, NULL);
-  if (out->type != Heredoc && !expand_str(envp, &out->token))
+  if (out->type != Heredoc && !expand_str(envp, &out->token, last_exit_code))
     return (free(out), NULL);
   cur[i] = c;
   *cursor = cur + i + (cur[i] == '"' || cur[i] == '\'');
@@ -132,25 +138,27 @@ static t_token *get_next_token(char **envp, char **cursor) {
   return out;
 }
 
-t_tl *parse(char **envp, char *src) {
+t_tl *parse(char **envp, char *src, int last_exit_code) {
   char **cursor = &src;
   t_tl *out = tl_init();
   if (!out)
     return NULL;
-  out->tokens = get_next_token(envp, cursor);
+  out->tokens = get_next_token(envp, cursor, last_exit_code);
   t_token *cur_token = out->tokens;
   bool cur_is_pipe = false;
   while (cur_token) {
     cur_is_pipe = cur_token->type == Pipe;
     out->ll++;
-    cur_token->next_token = get_next_token(envp, cursor);
+    cur_token->next_token = get_next_token(envp, cursor, last_exit_code);
     cur_token = cur_token->next_token;
+    if (errno != 0)
+      return (tl_destroy(out), NULL);
   }
 
-  if (cur_is_pipe)
+  if (cur_is_pipe) {
     syntaxerr('|');
-  if (errno != 0)
     return (tl_destroy(out), NULL);
+  }
 
   return out;
 }

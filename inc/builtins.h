@@ -11,15 +11,15 @@
 /* ************************************************************************** */
 
 #ifndef BUILTINS_H
-# define BUILTINS_H
+#define BUILTINS_H
 
-# include <stdbool.h>
+#include <stdbool.h>
 
-void	env(int ac, char **av, char **envp);
-int		export(int ac, char **av, char **envp);
-void	pwd(int ac, char **av, char **envp);
-int		unset(int ac, char **av, char **envp);
-int		echo(int ac, char **av, char **envp);
-int		cd(int ac, char **av, char **envp);
+void env(int ac, char **av, char **envp);
+int export(int ac, char **av, char **envp);
+void pwd(int ac, char **av, char **envp);
+int unset(int ac, char **av, char **envp);
+int echo(int ac, char **av, char **envp);
+int cd(int ac, char **av, char **envp);
 
 #endif

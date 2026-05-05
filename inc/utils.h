@@ -13,32 +13,18 @@
 #ifndef UTILS_H
 #define UTILS_H
 
-<<<<<<< HEAD
 #include <stdbool.h>
 #include <stddef.h>
-=======
-# include <stdbool.h>
-# include <stddef.h>
-
-void	*ft_realloc(void *ptr, size_t newsize);
-void	arr_destroy(void **arr);
-void	ft_env_destroy(char **envp);
-void	ft_env_make_individual_alloc(char **envp);
-int		find_env(const char **envp, const char *name);
-int		ft_setenv(char **envp, const char *name, const char *value,
-			bool rewrite);
-char	*ft_getenv(char **envp, const char *name);
-bool	ft_isspace(char c);
-char	**dup_env(char **envp);
->>>>>>> waz
+#include <stdbool.h>
+#include <stddef.h>
 
 void *ft_realloc(void *ptr, size_t newsize);
 void arr_destroy(void **arr);
-char **dup_env(char **envp);
 void ft_env_destroy(char **envp);
 void ft_env_make_individual_alloc(char **envp);
 int find_env(const char **envp, const char *name);
-int ft_setenv(char **envp, const char *name, const char *value, bool rewrite);
+int ft_setenv(char ***envp, const char *name, const char *value, bool rewrite);
 char *ft_getenv(char **envp, const char *name);
 bool ft_isspace(char c);
+char **dup_env(char **envp);
 #endif

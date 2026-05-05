@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "../inc/minishell.h"
+#include <stdlib.h>
 
 t_token *token_init(t_ttype type, char *token, t_token *next_token) {
   t_token *out = malloc(sizeof(t_token));

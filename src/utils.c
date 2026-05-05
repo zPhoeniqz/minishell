@@ -44,7 +44,7 @@ char **dup_env(char **envp) {
   size_t n = 0;
   while (envp[n])
     n++;
-  char **out = ft_calloc(n, sizeof(char *));
+  char **out = ft_calloc(n + 1, sizeof(char *));
   if (!out)
     return NULL;
 
@@ -85,37 +85,36 @@ static char *make_envstr(const char *name, const char *value) {
   return (envstr);
 }
 
-int ft_setenv(char **envp, const char *name, const char *value, bool rewrite) {
-  char *valuestart;
+int ft_setenv(char ***envp, const char *name, const char *value, bool rewrite) {
   int idx;
   char *envstr;
   char **newenv;
 
-  idx = find_env((const char **)envp, name);
+  idx = find_env((const char **)(*envp), name);
   if (idx != -1 && !rewrite)
     return (0);
+
+  envstr = make_envstr(name, value);
+  if (!envstr)
+    return 1;
   if (idx != -1) {
-    valuestart = envp[idx] + ft_strlen(name) + 1;
-    if (ft_strlen(valuestart) >= ft_strlen(value))
-      return (ft_memmove(valuestart, value, ft_strlen(value)), 0);
-    envstr = make_envstr(name, value);
-    if (!envstr)
-      return (1);
-    free(envp[idx]);
-    envp[idx] = envstr;
-    return (0);
+    free((*envp)[idx]);
+    (*envp)[idx] = envstr;
+    return 0;
   }
+
   idx = 0;
-  while (envp[idx])
+  while ((*envp)[idx])
     idx++;
-  newenv = ft_calloc((idx + 2), sizeof(char *));
+
+  newenv = ft_calloc(idx + 2, sizeof(char *));
   if (!newenv)
-    return (1);
-  memcpy(newenv, envp, idx * sizeof(char *));
-  newenv[idx] = make_envstr(name, value);
-  arr_destroy((void **)envp);
-  envp = newenv;
-  return (newenv[idx] == NULL);
+    return (free(envstr), 1);
+  ft_memcpy(newenv, *envp, idx * sizeof(char *));
+  newenv[idx] = envstr;
+  free(*envp);
+  *envp = newenv;
+  return 0;
 }
 
 char *ft_getenv(char **envp, const char *name) {

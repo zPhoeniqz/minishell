@@ -60,7 +60,6 @@ int read_cmd(char **target_buf, char *prompt) {
   if (ft_strlen(input) < 1)
     return (0);
   add_history(input);
-  free(input);
   *target_buf = input;
   return (1);
 }

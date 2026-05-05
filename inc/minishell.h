@@ -13,21 +13,19 @@
 #ifndef MINISHELL_H
 #define MINISHELL_H
 
-<<<<<<< HEAD
 #include "../libft/libft.h"
-#include "pipex.h"
 #include "builtins.h"
 #include "utils.h"
 #include <stdbool.h>
 
-    typedef enum e_ttype {
-      Heredoc = 'H',
-      InFile = 'I',
-      OutFile = 'O',
-      OutFileAppend = 'o',
-      Argument = 'A',
-      Pipe = 'P',
-    } t_ttype;
+typedef enum e_ttype {
+  Heredoc = 'H',
+  InFile = 'I',
+  OutFile = 'O',
+  OutFileAppend = 'o',
+  Argument = 'A',
+  Pipe = 'P',
+} t_ttype;
 
 typedef struct s_token {
   char *token;
@@ -62,10 +60,7 @@ void tl_destroy(t_tl *tl);
 
 bool ft_isdelim(char c);
 
-// replaces the dollar-annotated variable names in s with their corresponding
-// value or a blank. s MUST be heap-allocated.
-bool expand_str(char **envp, char **s);
-t_tl *parse(char **envp, char *src);
+t_tl *parse(char **envp, char *src, int last_exit_code);
 
 int exec(t_data *data);
 
