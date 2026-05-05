@@ -51,6 +51,7 @@ int main() {
       tl_destroy(data.tokenlist);
     }
   }
+  free(prompt);
   cwd_state(FREE);
   arr_destroy((void **)data.envp);
 }
