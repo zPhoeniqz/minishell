@@ -14,24 +14,6 @@
 
 extern char	**environ;
 
-static void	tl_destroy(t_tl *tl)
-{
-	t_token	*cur;
-	t_token	*next;
-
-	if (!tl)
-		return ;
-	cur = tl->tokens;
-	while (cur)
-	{
-		next = cur->next_token;
-		free(cur->token);
-		free(cur);
-		cur = next;
-	}
-	free(tl);
-}
-
 int	main(void)
 {
 	t_data	data;

@@ -18,11 +18,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-static bool	ft_isdelim(char c)
-{
-	return (ft_isspace(c) || c == '|' || c == '>' || c == '<' || c == '\0');
-}
-
 bool	expand_str(char **envp, char **s)
 {
 	bool	squoted;
@@ -93,21 +88,6 @@ static t_ttype	determine_ttype(char **cursor)
 		out = Pipe;
 	cur += out != Argument;
 	*cursor = cur;
-	return (out);
-}
-
-static t_token	*token_init(t_ttype type, char *token, t_token *next_token)
-{
-	t_token	*out;
-
-	out = malloc(sizeof(t_token));
-	if (!out)
-		return (NULL);
-	out->type = type;
-	out->token = ft_strdup(token);
-	if (!out->token && token)
-		return (free(out), NULL);
-	out->next_token = next_token;
 	return (out);
 }
 

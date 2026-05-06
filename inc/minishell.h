@@ -6,7 +6,7 @@
 /*   By: whuth <whuth@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/19 12:01:21 by whuth             #+#    #+#             */
-/*   Updated: 2026/05/04 15:13:57 by whuth            ###   ########.fr       */
+/*   Updated: 2026/05/06 17:14:56 by whuth            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,6 +64,11 @@ typedef struct s_stage
 	bool			append;
 }					t_stage;
 
+t_token				*token_init(t_ttype type, char *token, t_token *next_token);
+void				token_destroy(t_token *token);
+t_tl				*tl_init(void);
+void				tl_destroy(t_tl *tl);
+bool				ft_isdelim(char c);
 t_tl				*parse(char **envp, char *src);
 int					exec(t_data *data);
 
