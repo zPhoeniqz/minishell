@@ -6,7 +6,7 @@
 /*   By: whuth <whuth@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/19 12:01:21 by whuth             #+#    #+#             */
-/*   Updated: 2026/05/06 17:14:56 by whuth            ###   ########.fr       */
+/*   Updated: 2026/05/06 17:27:18 by whuth            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,24 +15,17 @@
 
 # include "../libft/libft.h"
 # include "builtins.h"
-# include "gnl.h"
-# include "path.h"
-# include "prompt.h"
-# include "signals.h"
 # include "utils.h"
 # include <stdbool.h>
-# include <stdio.h>
-
-# define DEL " \t\n\r\v\f"
 
 typedef enum e_ttype
 {
-	Heredoc,
-	InFile,
-	OutFile,
-	OutFileAppend,
-	Argument,
-	Pipe
+	Heredoc = 'H',
+	InFile = 'I',
+	OutFile = 'O',
+	OutFileAppend = 'o',
+	Argument = 'A',
+	Pipe = 'P',
 }					t_ttype;
 
 typedef struct s_token
@@ -67,9 +60,10 @@ typedef struct s_stage
 t_token				*token_init(t_ttype type, char *token, t_token *next_token);
 void				token_destroy(t_token *token);
 t_tl				*tl_init(void);
-void				tl_destroy(t_tl *tl);
 bool				ft_isdelim(char c);
-t_tl				*parse(char **envp, char *src);
 int					exec(t_data *data);
+void				tl_destroy(t_tl *tl);
+
+t_tl				*parse(char **envp, char *src, int last_exit_code);
 
 #endif
