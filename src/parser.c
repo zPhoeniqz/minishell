@@ -6,7 +6,7 @@
 /*   By: pbindl <pbindl@student.42berlin.de>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/21 12:51:02 by pbindl            #+#    #+#             */
-/*   Updated: 2026/05/06 17:30:37 by whuth            ###   ########.fr       */
+/*   Updated: 2026/05/06 17:37:12 by whuth            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -113,6 +113,14 @@ static t_ttype	determine_ttype(char **cursor)
 
 static t_token	*get_next_token(char **envp, char **cursor, int last_exit_code)
 {
+	t_ttype	type;
+	char	*cur;
+	bool	dquoted;
+	bool	squoted;
+	int		i;
+	char	c;
+	t_token	*out;
+
 	while (ft_isspace(**cursor))
 		(*cursor)++;
 	if (!**cursor)
