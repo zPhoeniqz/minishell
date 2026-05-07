@@ -15,8 +15,9 @@
 #include "../inc/prompt.h"
 #include "../inc/signals.h"
 #include <errno.h>
-#include <signal.h>
 #include <stdio.h>
+#include <readline/readline.h>
+#include <signal.h>
 #include <stdlib.h>
 #include <unistd.h>
 
@@ -46,6 +47,7 @@ int main(void) {
       break;
 
     data.tokenlist = parse(data.envp, input, exit_code);
+    free(input);
     if (errno != 0)
       exit_code = 2;
     if (data.tokenlist) {
@@ -62,5 +64,6 @@ int main(void) {
   free(prompt);
   cwd_state(FREE);
   arr_destroy((void **)data.envp);
+  rl_clear_history();
   return exit_code;
 }
