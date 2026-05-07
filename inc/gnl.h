@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line_bonus.h                              :+:      :+:    :+:   */
+/*   gnl.h                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: whuth <whuth@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/17 16:50:55 by whuth             #+#    #+#             */
-/*   Updated: 2025/08/02 18:32:57 by whuth            ###   ########.fr       */
+/*   Updated: 2026/05/06 18:03:06 by whuth            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,10 +21,10 @@
 #  define MAX_FD 256
 # endif
 
+# include "../libft/libft.h"
 # include <stddef.h>
 # include <stdlib.h>
 # include <unistd.h>
-# include "../libft/libft.h"
 
 char	*get_next_line(int fd);
 

@@ -11,13 +11,14 @@
 /* ************************************************************************** */
 
 #ifndef SIGNALS_H
-# define SIGNALS_H
+#define SIGNALS_H
 
-# include <signal.h>
-# include <stdbool.h>
+#include <signal.h>
+#include <stdbool.h>
 
-int		addsighandler(int sig, void (*handler)(int), int flags);
-void	signals_init(void);
-void	signals_forward_int(int sig);
+int addsighandler(int sig, void (*handler)(int), int flags);
+void signals_init(void);
+void sigfunc_redisplay_prompt(int sig);
+void sigfunc_return_to_prompt(int sig);
 
 #endif
