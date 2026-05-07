@@ -35,14 +35,15 @@ int addsighandler(int sig, void (*handler)(int), int flags) {
   return (out);
 }
 
-void signals_forward_int(int sig) {
+void sigfunc_redisplay_prompt(int sig) {
   (void)sig;
   write(STDOUT_FILENO, "\n", 1);
   rl_on_new_line();
   rl_redisplay();
 }
 
-void signals_init(void) {
-  addsighandler(SIGQUIT, SIG_IGN, 0);
-  addsighandler(SIGINT, signals_forward_int, SA_RESTART);
+void sigfunc_return_to_prompt(int sig) {
+  (void)sig;
+  write(STDOUT_FILENO, "\n", 1);
+  rl_on_new_line();
 }

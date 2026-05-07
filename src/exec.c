@@ -16,11 +16,19 @@
 #include "../inc/gnl.h"
 #include "../libft/libft.h"
 #include <fcntl.h>
+#include <signal.h>
 #include <stdbool.h>
 #include <stdlib.h>
 #include <sys/wait.h>
 #include <unistd.h>
 #include <stdio.h>
+
+static pid_t fork_setup() {
+  pid_t out = fork();
+  if (out == 0)
+    addsighandler(SIGINT, SIG_DFL, 0);
+  return out;
+}
 
 static t_token *build_stage(t_token *cur, t_stage *st) {
   int cap;
@@ -150,9 +158,9 @@ static int apply_input(t_stage *st) {
   if (st->heredoc) {
     if (pipe(p) == -1)
       return (perror("pipe"), -1);
-    pid = fork();
+    pid = fork_setup();
     if (pid == -1)
-      return (perror("fork"), -1);
+      return (perror("fork_setup"), -1);
     if (pid == 0) {
       close(p[0]);
       dlen = ft_strlen(st->heredoc);
@@ -255,9 +263,9 @@ static int exec_single(t_stage *st, char **envp) {
     close(sout);
     return (ret);
   }
-  pid = fork();
+  pid = fork_setup();
   if (pid == -1)
-    return (perror("fork"), 1);
+    return (perror("fork_setup"), 1);
   if (pid == 0)
     exec_child(st, envp);
   waitpid(pid, &status, 0);
@@ -279,20 +287,17 @@ static int exec_pipeline(t_stage *stages, int n, char **envp) {
   pids = ft_calloc(n, sizeof(pid_t));
   if (!pids)
     return (perror("calloc"), 1);
-  addsighandler(SIGINT, SIG_IGN, 0);
   prev_read = -1;
   i = 0;
   while (i < n) {
     if (i < n - 1 && pipe(p) == -1) {
       free(pids);
-      addsighandler(SIGINT, signals_forward_int, 0);
       return (perror("pipe"), 1);
     }
-    pids[i] = fork();
+    pids[i] = fork_setup();
     if (pids[i] == -1) {
       free(pids);
-      addsighandler(SIGINT, signals_forward_int, 0);
-      return (perror("fork"), 1);
+      return (perror("fork_setup"), 1);
     }
     if (pids[i] == 0) {
       if (prev_read != -1) {
@@ -327,7 +332,6 @@ static int exec_pipeline(t_stage *stages, int n, char **envp) {
     i++;
   }
   free(pids);
-  addsighandler(SIGINT, signals_forward_int, 0);
   return (ret);
 }
 

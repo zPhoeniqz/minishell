@@ -18,6 +18,7 @@
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 
 extern char **environ;
 
@@ -33,6 +34,7 @@ int main() {
   prompt_create(&prompt, cwd_state(UPDATE));
   int exit_code = 0;
   while (true) {
+    addsighandler(SIGINT, sigfunc_redisplay_prompt, 0);
     prompt_create(&prompt, cwd_state(READ));
     status = read_cmd(&input, prompt);
     if (status == 0)
@@ -44,8 +46,10 @@ int main() {
     if (errno != 0)
       exit_code = 2;
     if (data.tokenlist) {
-      if (errno == 0)
+      if (errno == 0) {
+        addsighandler(SIGINT, sigfunc_return_to_prompt, 0);
         exit_code = exec(&data);
+      }
       tl_destroy(data.tokenlist);
     }
     exit_code = exit_code % 256;
