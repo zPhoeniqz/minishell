@@ -25,7 +25,7 @@ extern char **environ;
 int main(void) {
   char *prompt;
   char *input;
-  int status;
+  int tmp_status;
   t_data data;
   int exit_code;
 
@@ -39,10 +39,10 @@ int main(void) {
   while (true) {
     addsighandler(SIGINT, sigfunc_redisplay_prompt, 0);
     prompt_create(&prompt, cwd_state(READ));
-    status = read_cmd(&input, prompt);
-    if (status == 0)
+    tmp_status = read_cmd(&input, prompt);
+    if (tmp_status == 0)
       continue;
-    else if (status == -1)
+    else if (tmp_status == -1)
       break;
 
     data.tokenlist = parse(data.envp, input, exit_code);
@@ -51,11 +51,13 @@ int main(void) {
     if (data.tokenlist) {
       if (errno == 0) {
         addsighandler(SIGINT, sigfunc_return_to_prompt, 0);
-        exit_code = exec(&data);
+        tmp_status = exec(&data);
       }
       tl_destroy(data.tokenlist);
     }
-    exit_code = exit_code % 256;
+    if (tmp_status == USEREXIT)
+      break;
+    exit_code = tmp_status % 256;
   }
   free(prompt);
   cwd_state(FREE);

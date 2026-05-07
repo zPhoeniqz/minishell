@@ -15,6 +15,7 @@
 #include "../inc/path.h"
 #include "../inc/signals.h"
 #include "../libft/libft.h"
+#include <errno.h>
 #include <fcntl.h>
 #include <signal.h>
 #include <stdbool.h>
@@ -99,6 +100,8 @@ static bool is_builtin(const char *name) {
 static int run_builtin(t_stage *st, char ***envp) {
   const char *n;
 
+  errno = 0;
+
   n = st->argv[0];
   if (ft_strncmp(n, "echo", 5) == 0)
     return (echo(st->argc, st->argv, *envp));
@@ -113,9 +116,7 @@ static int run_builtin(t_stage *st, char ***envp) {
   if (ft_strncmp(n, "env", 4) == 0)
     return (env(st->argc, st->argv, *envp), 0);
   if (ft_strncmp(n, "exit", 5) == 0) {
-    if (st->argc > 1)
-      exit(ft_atoi(st->argv[1]));
-    exit(0);
+    errno = ECANCELED;
   }
   return (1);
 }
@@ -244,8 +245,11 @@ static void exec_child(t_stage *st, char **envp) {
     exit(1);
   if (!st->argv || !st->argv[0])
     exit(0);
-  if (is_builtin(st->argv[0]))
-    exit(run_builtin(st, &envp));
+  if (is_builtin(st->argv[0])) {
+    int r = run_builtin(st, &envp);
+    if (errno != ECANCELED)
+      exit(r);
+  }
   path = resolve_path(st->argv[0], envp);
   if (!path) {
     ft_putstr_fd(st->argv[0], STDERR_FILENO);
@@ -387,9 +391,11 @@ int exec(t_data *data) {
     }
     i++;
   }
-  if (n_stages == 1)
+  if (n_stages == 1) {
     ret = exec_single(&stages[0], &data->envp);
-  else
+    if (errno == ECANCELED)
+      ret = USEREXIT;
+  } else
     ret = exec_pipeline(stages, n_stages, data->envp);
   i = 0;
   while (i < n_stages)
