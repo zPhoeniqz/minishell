@@ -31,6 +31,8 @@ int main() {
   prompt = NULL;
   input = NULL;
   data.envp = dup_env(environ);
+  if (!data.envp)
+    return EXIT_FAILURE;
   prompt_create(&prompt, cwd_state(UPDATE));
   int exit_code = 0;
   while (true) {
