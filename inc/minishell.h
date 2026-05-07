@@ -6,7 +6,7 @@
 /*   By: whuth <whuth@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/19 12:01:21 by whuth             #+#    #+#             */
-/*   Updated: 2026/05/06 17:27:18 by whuth            ###   ########.fr       */
+/*   Updated: 2026/05/07 13:15:23 by whuth            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,14 +47,18 @@ typedef struct s_data
 	char			**envp;
 }					t_data;
 
+typedef struct s_redir
+{
+	char			*file;
+	t_ttype			type;
+}					t_redir;
+
 typedef struct s_stage
 {
 	char			**argv;
 	int				argc;
-	char			*in_file;
-	char			*out_file;
-	char			*heredoc;
-	bool			append;
+	t_redir			*redirs;
+	int				nredirs;
 }					t_stage;
 
 t_token				*token_init(t_ttype type, char *token, t_token *next_token);
