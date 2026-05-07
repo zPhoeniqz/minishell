@@ -32,6 +32,14 @@ static pid_t fork_setup() {
   return out;
 }
 
+static void heredoc_warning(char *delim) {
+  ft_putchar_fd('\n', STDOUT_FILENO);
+  ft_putstr_fd("warning: here-document delimited by end-of-file (wanted `",
+               STDERR_FILENO);
+  ft_putstr_fd(delim, STDERR_FILENO);
+  ft_putendl_fd("')", STDERR_FILENO);
+}
+
 static bool push_redir(t_stage *st, t_ttype type, char *file) {
   t_redir *tmp;
 
@@ -115,9 +123,8 @@ static int run_builtin(t_stage *st, char ***envp) {
     return (unset(st->argc, st->argv, envp));
   if (ft_strncmp(n, "env", 4) == 0)
     return (env(st->argc, st->argv, *envp), 0);
-  if (ft_strncmp(n, "exit", 5) == 0) {
-    errno = ECANCELED;
-  }
+  if (ft_strncmp(n, "exit", 5) == 0)
+    return USEREXIT;
   return (1);
 }
 
@@ -184,8 +191,12 @@ static int apply_input(t_stage *st) {
         while (1) {
           write(STDERR_FILENO, "> ", 2);
           line = get_next_line(STDIN_FILENO);
-          if (!line)
+          if (!line) {
+            if (errno == 0)
+              heredoc_warning(st->redirs[i].file);
             break;
+          }
+
           if (ft_strncmp(line, st->redirs[i].file, dlen) == 0 &&
               (line[dlen] == '\n' || line[dlen] == '\0')) {
             free(line);
@@ -246,9 +257,7 @@ static void exec_child(t_stage *st, char **envp) {
   if (!st->argv || !st->argv[0])
     exit(0);
   if (is_builtin(st->argv[0])) {
-    int r = run_builtin(st, &envp);
-    if (errno != ECANCELED)
-      exit(r);
+    exit(run_builtin(st, &envp));
   }
   path = resolve_path(st->argv[0], envp);
   if (!path) {
@@ -393,8 +402,6 @@ int exec(t_data *data) {
   }
   if (n_stages == 1) {
     ret = exec_single(&stages[0], &data->envp);
-    if (errno == ECANCELED)
-      ret = USEREXIT;
   } else
     ret = exec_pipeline(stages, n_stages, data->envp);
   i = 0;
