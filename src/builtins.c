@@ -6,7 +6,7 @@
 /*   By: pbindl <pbindl@student.42berlin.de>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/21 18:13:45 by pbindl            #+#    #+#             */
-/*   Updated: 2026/05/03 22:09:10 by whuth            ###   ########.fr       */
+/*   Updated: 2026/05/06 19:57:07 by whuth            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,7 @@ static bool check_varname(const char *name) {
   return (true);
 }
 
-int export(int ac, char **av, char **envp) {
+int export(int ac, char **av, char ***envp) {
   char **var;
   int failures;
 
@@ -67,7 +67,7 @@ int export(int ac, char **av, char **envp) {
   while (ac > 1) {
     var = ft_split(*av, '=');
     if (var && var[1] && check_varname(*var))
-      failures += ft_setenv(&envp, var[0], var[1], true);
+      failures += ft_setenv(envp, var[0], var[1], true);
     else
       failures += 1;
     if (var)
@@ -105,12 +105,12 @@ static void unset_single(char **envp, char *envname) {
   envp[num_vars - 2] = 0;
 }
 
-int unset(int ac, char **av, char **envp) {
+int unset(int ac, char **av, char ***envp) {
   int i;
 
   i = 1;
   while (i < ac)
-    unset_single(envp, av[i++]);
+    unset_single(*envp, av[i++]);
   return (0);
 }
 

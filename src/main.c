@@ -6,7 +6,7 @@
 /*   By: whuth <whuth@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/26 17:48:36 by whuth             #+#    #+#             */
-/*   Updated: 2026/04/26 18:02:21 by whuth            ###   ########.fr       */
+/*   Updated: 2026/05/06 17:29:00 by whuth            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,11 +22,12 @@
 
 extern char **environ;
 
-int main() {
+int main(void) {
   char *prompt;
   char *input;
   int status;
   t_data data;
+  int exit_code;
 
   prompt = NULL;
   input = NULL;
@@ -34,7 +35,7 @@ int main() {
   if (!data.envp)
     return EXIT_FAILURE;
   prompt_create(&prompt, cwd_state(UPDATE));
-  int exit_code = 0;
+  exit_code = 0;
   while (true) {
     addsighandler(SIGINT, sigfunc_redisplay_prompt, 0);
     prompt_create(&prompt, cwd_state(READ));
