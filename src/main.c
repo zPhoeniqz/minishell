@@ -15,6 +15,7 @@
 #include "../inc/prompt.h"
 #include "../inc/signals.h"
 #include <errno.h>
+#include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -32,10 +33,7 @@ int main() {
   prompt_create(&prompt, cwd_state(UPDATE));
   int exit_code = 0;
   while (true) {
-    addsighandler(SIGINT, signals_forward_int, 0);
-    if (ft_strlen(prompt) != ft_strlen(cwd_state(READ)) - 2 ||
-        ft_strncmp(cwd_state(READ), prompt, ft_strlen(prompt) - 2) != 0)
-      prompt_create(&prompt, cwd_state(READ));
+    prompt_create(&prompt, cwd_state(READ));
     status = read_cmd(&input, prompt);
     if (status == 0)
       continue;

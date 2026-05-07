@@ -139,9 +139,9 @@ int echo(int ac, char **av, char **envp) {
 
 int cd(int ac, char **av, char **envp) {
   if (ac != 2)
-    return (1);
+    return (0);
   if (chdir(av[1]) < 0) {
-    perror(NULL);
+    perror("cd");
     return (1);
   }
   ft_setenv(&envp, "PWD", av[1], true);
