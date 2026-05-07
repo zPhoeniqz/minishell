@@ -37,6 +37,7 @@ int addsighandler(int sig, void (*handler)(int), int flags) {
 
 void sigfunc_redisplay_prompt(int sig) {
   (void)sig;
+  rl_replace_line("", 0);
   write(STDOUT_FILENO, "\n", 1);
   rl_on_new_line();
   rl_redisplay();
