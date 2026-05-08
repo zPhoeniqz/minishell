@@ -131,7 +131,8 @@ int echo(int ac, char **av, char **envp) {
   }
   while (i < ac - 1)
     printf("%s ", av[i++]);
-  printf("%s", av[i]);
+  if (i < ac)
+    printf("%s", av[i]);
   if (nl)
     printf("\n");
   return (0);
