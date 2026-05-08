@@ -68,7 +68,7 @@ t_token				*token_init(t_ttype type, char *token, t_token *next_token);
 void				token_destroy(t_token *token);
 t_tl				*tl_init(void);
 bool				ft_isdelim(char c);
-int					exec(t_data *data, int *exit_code);
+int					exec(t_data *data);
 void				tl_destroy(t_tl *tl);
 
 t_tl				*parse(char **envp, char *src, int last_exit_code);
