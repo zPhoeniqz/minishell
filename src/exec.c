@@ -120,7 +120,7 @@ static bool	is_builtin(const char *name)
 	return (false);
 }
 
-static int	run_builtin(t_stage *st, char ***envp)
+static int	run_builtin(t_stage *st, char ***envp, int *exit_code)
 {
 	const char	*n;
 
@@ -140,8 +140,13 @@ static int	run_builtin(t_stage *st, char ***envp)
 		return (env(st->argc, st->argv, *envp), 0);
 	if (ft_strncmp(n, "exit", 5) == 0)
 	{
+		ft_putendl_fd("exit", STDERR_FILENO);
 		if (st->argc > 1)
-			return (USEREXIT + ft_atoi(st->argv[1]));
+		{
+			*exit_code = ft_atoi(st->argv[1]) % 256;
+			if (*exit_code < 0)
+				*exit_code += 256;
+		}
 		return (USEREXIT);
 	}
 	return (1);
@@ -345,7 +350,7 @@ static int	apply_output(t_stage *st)
 	return (0);
 }
 
-static void	exec_child(t_stage *st, char **envp)
+static void	exec_child(t_stage *st, char **envp, int *exit_code)
 {
 	char	*path;
 
@@ -357,7 +362,7 @@ static void	exec_child(t_stage *st, char **envp)
 		exit(0);
 	if (is_builtin(st->argv[0]))
 	{
-		exit(run_builtin(st, &envp));
+		exit(run_builtin(st, &envp, exit_code));
 	}
 	path = resolve_path(st->argv[0], envp);
 	if (!path)
@@ -372,7 +377,7 @@ static void	exec_child(t_stage *st, char **envp)
 	exit(126);
 }
 
-static int	exec_single(t_stage *st, char ***envp)
+static int	exec_single(t_stage *st, char ***envp, int *exit_code)
 {
 	pid_t	pid;
 	int		status;
@@ -394,7 +399,7 @@ static int	exec_single(t_stage *st, char ***envp)
 			close(sout);
 			return (1);
 		}
-		ret = run_builtin(st, envp);
+		ret = run_builtin(st, envp, exit_code);
 		dup2(sin, STDIN_FILENO);
 		dup2(sout, STDOUT_FILENO);
 		close(sin);
@@ -405,7 +410,7 @@ static int	exec_single(t_stage *st, char ***envp)
 	if (pid == -1)
 		return (perror("fork"), 1);
 	if (pid == 0)
-		exec_child(st, *envp);
+		exec_child(st, *envp, exit_code);
 	waitpid(pid, &status, 0);
 	if (WIFEXITED(status))
 		return (WEXITSTATUS(status));
@@ -414,7 +419,7 @@ static int	exec_single(t_stage *st, char ***envp)
 	return (1);
 }
 
-static int	exec_pipeline(t_stage *stages, int n, char **envp)
+static int	exec_pipeline(t_stage *stages, int n, char **envp, int *exit_code)
 {
 	pid_t	*pids;
 	int		prev_read;
@@ -454,7 +459,7 @@ static int	exec_pipeline(t_stage *stages, int n, char **envp)
 				dup2(p[1], STDOUT_FILENO);
 				close(p[1]);
 			}
-			exec_child(&stages[i], envp);
+			exec_child(&stages[i], envp, exit_code);
 		}
 		if (prev_read != -1)
 			close(prev_read);
@@ -483,7 +488,7 @@ static int	exec_pipeline(t_stage *stages, int n, char **envp)
 	return (ret);
 }
 
-int	exec(t_data *data)
+int	exec(t_data *data, int *exit_code)
 {
 	t_stage	*stages;
 	int		n_stages;
@@ -527,9 +532,9 @@ int	exec(t_data *data)
 		return (1);
 	}
 	if (n_stages == 1)
-		ret = exec_single(&stages[0], &data->envp);
+		ret = exec_single(&stages[0], &data->envp, exit_code);
 	else
-		ret = exec_pipeline(stages, n_stages, data->envp);
+		ret = exec_pipeline(stages, n_stages, data->envp, exit_code);
 	close_heredoc_fds(stages, n_stages);
 	i = 0;
 	while (i < n_stages)
