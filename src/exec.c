@@ -120,7 +120,7 @@ static bool	is_builtin(const char *name)
 	return (false);
 }
 
-static int	run_builtin(t_stage *st, char ***envp, int *exit_code)
+static int	run_builtin(t_stage *st, char ***envp)
 {
 	const char	*n;
 
@@ -141,12 +141,6 @@ static int	run_builtin(t_stage *st, char ***envp, int *exit_code)
 	if (ft_strncmp(n, "exit", 5) == 0)
 	{
 		ft_putendl_fd("exit", STDERR_FILENO);
-		if (st->argc > 1)
-		{
-			*exit_code = ft_atoi(st->argv[1]) % 256;
-			if (*exit_code < 0)
-				*exit_code += 256;
-		}
 		return (USEREXIT);
 	}
 	return (1);
@@ -350,7 +344,7 @@ static int	apply_output(t_stage *st)
 	return (0);
 }
 
-static void	exec_child(t_stage *st, char **envp, int *exit_code)
+static void	exec_child(t_stage *st, char **envp)
 {
 	char	*path;
 
@@ -362,7 +356,7 @@ static void	exec_child(t_stage *st, char **envp, int *exit_code)
 		exit(0);
 	if (is_builtin(st->argv[0]))
 	{
-		exit(run_builtin(st, &envp, exit_code));
+		exit(run_builtin(st, &envp));
 	}
 	path = resolve_path(st->argv[0], envp);
 	if (!path)
@@ -377,7 +371,7 @@ static void	exec_child(t_stage *st, char **envp, int *exit_code)
 	exit(126);
 }
 
-static int	exec_single(t_stage *st, char ***envp, int *exit_code)
+static int	exec_single(t_stage *st, char ***envp)
 {
 	pid_t	pid;
 	int		status;
@@ -399,7 +393,7 @@ static int	exec_single(t_stage *st, char ***envp, int *exit_code)
 			close(sout);
 			return (1);
 		}
-		ret = run_builtin(st, envp, exit_code);
+		ret = run_builtin(st, envp);
 		dup2(sin, STDIN_FILENO);
 		dup2(sout, STDOUT_FILENO);
 		close(sin);
@@ -410,7 +404,7 @@ static int	exec_single(t_stage *st, char ***envp, int *exit_code)
 	if (pid == -1)
 		return (perror("fork"), 1);
 	if (pid == 0)
-		exec_child(st, *envp, exit_code);
+		exec_child(st, *envp);
 	waitpid(pid, &status, 0);
 	if (WIFEXITED(status))
 		return (WEXITSTATUS(status));
@@ -419,7 +413,7 @@ static int	exec_single(t_stage *st, char ***envp, int *exit_code)
 	return (1);
 }
 
-static int	exec_pipeline(t_stage *stages, int n, char **envp, int *exit_code)
+static int	exec_pipeline(t_stage *stages, int n, char **envp)
 {
 	pid_t	*pids;
 	int		prev_read;
@@ -459,7 +453,7 @@ static int	exec_pipeline(t_stage *stages, int n, char **envp, int *exit_code)
 				dup2(p[1], STDOUT_FILENO);
 				close(p[1]);
 			}
-			exec_child(&stages[i], envp, exit_code);
+			exec_child(&stages[i], envp);
 		}
 		if (prev_read != -1)
 			close(prev_read);
@@ -488,7 +482,7 @@ static int	exec_pipeline(t_stage *stages, int n, char **envp, int *exit_code)
 	return (ret);
 }
 
-int	exec(t_data *data, int *exit_code)
+int	exec(t_data *data)
 {
 	t_stage	*stages;
 	int		n_stages;
@@ -532,9 +526,9 @@ int	exec(t_data *data, int *exit_code)
 		return (1);
 	}
 	if (n_stages == 1)
-		ret = exec_single(&stages[0], &data->envp, exit_code);
+		ret = exec_single(&stages[0], &data->envp);
 	else
-		ret = exec_pipeline(stages, n_stages, data->envp, exit_code);
+		ret = exec_pipeline(stages, n_stages, data->envp);
 	close_heredoc_fds(stages, n_stages);
 	i = 0;
 	while (i < n_stages)

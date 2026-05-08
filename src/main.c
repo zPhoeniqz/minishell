@@ -56,7 +56,7 @@ int	main(void)
 			if (errno == 0)
 			{
 				addsighandler(SIGINT, sigfunc_return_to_prompt, 0);
-				tmp_status = exec(&data, &exit_code);
+				tmp_status = exec(&data);
 			}
 			tl_destroy(data.tokenlist);
 		}
