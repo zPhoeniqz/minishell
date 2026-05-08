@@ -103,6 +103,7 @@ static t_token *get_next_token(char **envp, char **cursor, int last_exit_code) {
     cur++;
   bool dquoted = *cur == '"';
   bool squoted = *cur == '\'';
+  bool interpret = true;
 
   cur += squoted || dquoted;
 
@@ -116,6 +117,7 @@ static t_token *get_next_token(char **envp, char **cursor, int last_exit_code) {
     }
     if (cur[i] == '\'' && !dquoted) {
       squoted = false;
+      interpret = false;
       break;
     }
     i++;
@@ -133,7 +135,8 @@ static t_token *get_next_token(char **envp, char **cursor, int last_exit_code) {
   char c = cur[i];
   cur[i] = 0;
   t_token *out = token_init(type, cur, NULL);
-  if (out->type != Heredoc && !expand_str(envp, &out->token, last_exit_code))
+  if (out->type != Heredoc && interpret &&
+      !expand_str(envp, &out->token, last_exit_code))
     return (free(out), NULL);
   cur[i] = c;
   *cursor = cur + i + (cur[i] == '"' || cur[i] == '\'');
