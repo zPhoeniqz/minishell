@@ -75,13 +75,21 @@ int find_env(const char **envp, const char *name) {
 
 static char *make_envstr(const char *name, const char *value) {
   char *envstr;
+  size_t len;
 
-  envstr = ft_calloc(ft_strlen(name) + ft_strlen(value) + 2, 1);
+  len = ft_strlen(name) + 2;
+  if (value)
+    len += ft_strlen(value);
+
+  envstr = ft_calloc(len, 1);
   if (!envstr)
     return (NULL);
   memcpy(envstr, name, ft_strlen(name));
   envstr[ft_strlen(name)] = '=';
-  memcpy(envstr + ft_strlen(name) + 1, value, ft_strlen(value));
+  if (value)
+    memcpy(envstr + ft_strlen(name) + 1, value, ft_strlen(value));
+  else
+    envstr[ft_strlen(name)] = 0;
   return (envstr);
 }
 
@@ -119,10 +127,15 @@ int ft_setenv(char ***envp, const char *name, const char *value, bool rewrite) {
 
 char *ft_getenv(char **envp, const char *name) {
   size_t len = ft_strlen(name);
+  char *eqs;
 
   while (*envp) {
-    if (ft_strncmp(*envp, name, len) == 0)
-      return ft_strchr(*envp, '=') + 1;
+    if (ft_strncmp(*envp, name, len) == 0) {
+      eqs = ft_strchr(*envp, '=');
+      if (!eqs)
+        return NULL;
+      return eqs + 1;
+    }
     envp++;
   }
 
