@@ -139,7 +139,11 @@ static int	run_builtin(t_stage *st, char ***envp)
 	if (ft_strncmp(n, "env", 4) == 0)
 		return (env(st->argc, st->argv, *envp), 0);
 	if (ft_strncmp(n, "exit", 5) == 0)
+	{
+		if (st->argc > 1)
+			return (USEREXIT + ft_atoi(st->argv[1]));
 		return (USEREXIT);
+	}
 	return (1);
 }
 
