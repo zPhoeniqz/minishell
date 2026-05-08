@@ -19,6 +19,7 @@
 #include <stdbool.h>
 
 #define USEREXIT 256
+#define EMORETOREAD 1000
 
 typedef enum e_ttype {
   Heredoc = 'H',

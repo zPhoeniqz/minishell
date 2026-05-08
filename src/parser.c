@@ -102,9 +102,10 @@ static t_token *get_next_token(char **envp, char **cursor, int last_exit_code) {
   while (ft_isspace(*cur))
     cur++;
   bool dquoted = *cur == '"';
-  bool squoted = *cur == '\'';
+  bool squoted = *cur == '\'' && !dquoted;
   bool interpret = true;
 
+  bool quoted = dquoted || squoted;
   cur += squoted || dquoted;
 
   int i = 0;
@@ -139,8 +140,11 @@ static t_token *get_next_token(char **envp, char **cursor, int last_exit_code) {
       !expand_str(envp, &out->token, last_exit_code))
     return (free(out), NULL);
   cur[i] = c;
-  *cursor = cur + i + (cur[i] == '"' || cur[i] == '\'');
-  errno = 0;
+  *cursor = cur + i + quoted;
+  if (*cursor && !ft_isdelim(**cursor))
+    errno = EMORETOREAD;
+  else
+    errno = 0;
   return out;
 }
 
@@ -148,6 +152,7 @@ t_tl *parse(char **envp, char *src, int last_exit_code) {
   if (!src)
     return NULL;
   char **cursor = &src;
+  t_token *ntoken;
   t_tl *out = tl_init();
   if (!out)
     return NULL;
@@ -156,10 +161,21 @@ t_tl *parse(char **envp, char *src, int last_exit_code) {
   bool cur_is_pipe = false;
   while (cur_token) {
     cur_is_pipe = cur_token->type == Pipe;
+    if (errno == EMORETOREAD) {
+      errno = 0;
+      ntoken = get_next_token(envp, cursor, last_exit_code);
+      if (!ntoken)
+        return (tl_destroy(out), NULL);
+      char *newtoken = ft_strjoin(cur_token->token, ntoken->token);
+      free(cur_token->token);
+      token_destroy(ntoken);
+      cur_token->token = newtoken;
+      continue;
+    }
     out->ll++;
     cur_token->next_token = get_next_token(envp, cursor, last_exit_code);
     cur_token = cur_token->next_token;
-    if (errno != 0)
+    if (errno != 0 && errno != EMORETOREAD)
       return (tl_destroy(out), NULL);
   }
 
@@ -176,7 +192,7 @@ int main(int argc, char **argv, char **envp) {
   if (argc != 2)
     return 1;
 
-  t_tl *tokens = get_tokens(envp, argv[1]);
+  t_tl *tokens = parse(envp, argv[1], 0);
   if (!tokens)
     return 1;
 
