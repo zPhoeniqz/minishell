@@ -58,6 +58,7 @@ static bool	push_redir(t_stage *st, t_ttype type, char *file)
 	}
 	tmp[st->nredirs].type = type;
 	tmp[st->nredirs].file = file;
+	tmp[st->nredirs].fd = -1;
 	st->redirs = tmp;
 	st->nredirs++;
 	return (true);
