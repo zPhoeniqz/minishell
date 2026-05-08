@@ -35,7 +35,7 @@ bool expand_str(char **envp, char **s, int last_exit_code) {
     if (!squoted && (*s)[i] == '$') {
       int end = i + 1;
       if ((*s)[end] != '?') {
-        while (!ft_isdelim((*s)[end]))
+        while (ft_isalnum((*s)[end]) || (*s)[end] == '_')
           end++;
         char c = (*s)[end];
         (*s)[end] = 0;
