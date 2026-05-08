@@ -13,6 +13,7 @@
 #include "../inc/path.h"
 #include "../inc/utils.h"
 #include "../libft/libft.h"
+#include "../inc/minishell.h"
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -117,6 +118,7 @@ int unset(int ac, char **av, char ***envp) {
 int echo(int ac, char **av, char **envp) {
   int i;
   bool nl;
+  char *s;
 
   (void)envp;
   if (ac <= 1) {
@@ -125,7 +127,10 @@ int echo(int ac, char **av, char **envp) {
   }
   nl = true;
   i = 1;
-  if (ft_strncmp(av[1], "-n", ft_strlen(av[1])) == 0) {
+  while (i < ac && ft_strncmp(av[i], "-n", 2) == 0) {
+    s = ft_strrchr(av[i], 'n');
+    if (!s || !ft_isdelim(s[1]))
+      break;
     nl = false;
     i++;
   }
