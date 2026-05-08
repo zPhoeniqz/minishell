@@ -6,7 +6,7 @@
 /*   By: whuth <whuth@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/26 17:48:36 by whuth             #+#    #+#             */
-/*   Updated: 2026/05/08 13:21:47 by whuth            ###   ########.fr       */
+/*   Updated: 2026/05/08 14:40:39 by whuth            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,16 +56,12 @@ int	main(void)
 			if (errno == 0)
 			{
 				addsighandler(SIGINT, sigfunc_return_to_prompt, 0);
-				tmp_status = exec(&data);
+				tmp_status = exec(&data, &exit_code);
 			}
 			tl_destroy(data.tokenlist);
 		}
-		if (tmp_status >= USEREXIT)
-		{
-			if (tmp_status > USEREXIT)
-				exit_code = (tmp_status - USEREXIT) % 256;
+		if (tmp_status == USEREXIT)
 			break ;
-		}
 		exit_code = tmp_status % 256;
 	}
 	free(prompt);
