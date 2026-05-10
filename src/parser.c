@@ -141,6 +141,8 @@ static t_token *get_next_token(char **envp, char **cursor, int last_exit_code) {
     return (free(out), NULL);
   cur[i] = c;
   *cursor = cur + i + quoted;
+  if (!quoted && ft_strlen(out->token) == 1 && ft_isspace(*out->token))
+    return (token_destroy(out), get_next_token(envp, cursor, last_exit_code));
   if (*cursor && !ft_isdelim(**cursor))
     errno = EMORETOREAD;
   else
