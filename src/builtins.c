@@ -122,12 +122,19 @@ static void print_exports(char **envp) {
     j = 0;
     while (envp[min_idx][j] && envp[min_idx][j] != '=')
       ft_putchar_fd(envp[min_idx][j++], STDOUT_FILENO);
+
+    printed[min_idx] = true;
+
+    if (!envp[min_idx][j]) {
+      ft_putchar_fd('\n', STDOUT_FILENO);
+      continue;
+    }
+
     ft_putchar_fd(envp[min_idx][j++], STDOUT_FILENO);
     ft_putchar_fd('"', STDOUT_FILENO);
     while (envp[min_idx][j])
       ft_putchar_fd(envp[min_idx][j++], STDOUT_FILENO);
     ft_putendl_fd("\"", STDOUT_FILENO);
-    printed[min_idx] = true;
   }
 
   free(printed);
