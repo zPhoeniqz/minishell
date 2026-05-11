@@ -6,7 +6,7 @@
 /*   By: whuth <whuth@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/26 17:48:36 by whuth             #+#    #+#             */
-/*   Updated: 2026/05/10 21:47:28 by pbindl           ###   ########.fr       */
+/*   Updated: 2026/05/11 15:15:30 by whuth            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,10 +15,10 @@
 #include "../inc/prompt.h"
 #include "../inc/signals.h"
 #include <errno.h>
-#include <stdio.h>
 #include <readline/readline.h>
 #include <signal.h>
 #include <stdbool.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 
@@ -59,7 +59,7 @@ static int	run(t_data *data, char *input, int *exit_code)
 		if (errno == 0)
 		{
 			addsighandler(SIGINT, sigfunc_return_to_prompt, 0);
-			out = exec(data);
+			out = exec(data, exit_code);
 		}
 		tl_destroy(data->tokenlist);
 	}

@@ -6,11 +6,18 @@
 /*   By: whuth <whuth@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/11 11:57:03 by whuth             #+#    #+#             */
-/*   Updated: 2026/05/11 13:33:25 by whuth            ###   ########.fr       */
+/*   Updated: 2026/05/11 14:54:24 by whuth            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/exec.h"
+
+static void	apply_exitcode(t_stage *st, int *exitcode)
+{
+	*exitcode = ft_atoi(st->argv[1]) % 256;
+	if (*exitcode < 0)
+		*exitcode += 256;
+}
 
 bool	is_builtin(const char *name)
 {
@@ -28,7 +35,7 @@ bool	is_builtin(const char *name)
 	return (false);
 }
 
-int	run_builtin(t_stage *st, char ***envp)
+int	run_builtin(t_stage *st, char ***envp, int *exitcode)
 {
 	const char	*n;
 
@@ -49,6 +56,8 @@ int	run_builtin(t_stage *st, char ***envp)
 	if (ft_strncmp(n, "exit", 5) == 0)
 	{
 		ft_putendl_fd("exit", STDERR_FILENO);
+		if (st->argc > 1)
+			apply_exitcode(st, exitcode);
 		return (USEREXIT);
 	}
 	return (1);

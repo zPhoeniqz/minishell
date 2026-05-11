@@ -6,7 +6,7 @@
 /*   By: whuth <whuth@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/11 12:04:37 by whuth             #+#    #+#             */
-/*   Updated: 2026/05/11 12:06:36 by whuth            ###   ########.fr       */
+/*   Updated: 2026/05/11 15:10:07 by whuth            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,14 +61,15 @@ static void	parent_advance_pipe(int *prev_read, int *p, int i, int n)
 	}
 }
 
-static int	pipe_loop(t_stage *stages, pid_t *pids, int n, char **envp)
+static int	pipe_loop(t_stage *stages, pid_t *pids, t_data *data, int *exitcode)
 {
-	int	prev_read;
-	int	p[2];
 	int	i;
+	int	n;
+	int	p[2];
+	int	prev_read;
 
-	prev_read = -1;
 	i = 0;
+	n = count_stages(data->tokenlist->tokens);
 	while (i < n)
 	{
 		if (i < n - 1 && pipe(p) == -1)
@@ -79,7 +80,7 @@ static int	pipe_loop(t_stage *stages, pid_t *pids, int n, char **envp)
 		if (pids[i] == 0)
 		{
 			child_setup_io(prev_read, p, i, n);
-			exec_child(&stages[i], envp);
+			exec_child(&stages[i], data->envp, exitcode);
 		}
 		parent_advance_pipe(&prev_read, p, i, n);
 		i++;
@@ -87,7 +88,7 @@ static int	pipe_loop(t_stage *stages, pid_t *pids, int n, char **envp)
 	return (0);
 }
 
-int	exec_pipeline(t_stage *stages, int n, char **envp)
+int	exec_pipeline(t_stage *stages, int n, t_data *data, int *exitcode)
 {
 	pid_t	*pids;
 	int		ret;
@@ -95,7 +96,7 @@ int	exec_pipeline(t_stage *stages, int n, char **envp)
 	pids = ft_calloc(n, sizeof(pid_t));
 	if (!pids)
 		return (perror("calloc"), 1);
-	if (pipe_loop(stages, pids, n, envp) == -1)
+	if (pipe_loop(stages, pids, data, exitcode) == -1)
 	{
 		free(pids);
 		return (1);
