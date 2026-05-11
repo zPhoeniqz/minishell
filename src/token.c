@@ -6,7 +6,7 @@
 /*   By: pbindl <pbindl@student.42berlin.de>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/11 19:59:12 by pbindl            #+#    #+#             */
-/*   Updated: 2026/05/11 20:05:05 by pbindl           ###   ########.fr       */
+/*   Updated: 2026/05/11 20:21:47 by pbindl           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 #include "../libft/libft.h"
 #include <errno.h>
 #include <stdbool.h>
+#include <stdio.h>
 #include <stdlib.h>
 
 static t_ttype	determine_ttype(char **cursor)
@@ -102,7 +103,7 @@ t_token	*get_next_token(char **envp, char **cursor, int lexit)
 	i = find_quotes(&cur, &qstate);
 	if (i == -1)
 		return (NULL);
-	if (i == 0)
+	if (i == 0 && qstate == 0)
 		return (syntaxerr('>' * (type == OutFile || type == OutFileAppend) + '<'
 				* (type == InFile || type == Heredoc)), NULL);
 	out = token_init(type, ft_substr(cur, 0, i), NULL);
