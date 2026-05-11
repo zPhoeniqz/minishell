@@ -15,6 +15,7 @@
 
 # include <stdbool.h>
 # include <stddef.h>
+# include "../libft/libft.h"
 
 void	*ft_realloc(void *ptr, size_t newsize);
 void	arr_destroy(void **arr);
