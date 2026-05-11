@@ -12,11 +12,44 @@
 
 #include "../inc/exec.h"
 
-static void	apply_exitcode(t_stage *st, int *exitcode)
+static bool	is_numeric(const char *s)
 {
-	*exitcode = ft_atoi(st->argv[1]) % 256;
-	if (*exitcode < 0)
-		*exitcode += 256;
+	if (*s == '-' || *s == '+')
+		s++;
+	if (!*s)
+		return (false);
+	while (*s)
+	{
+		if (!ft_isdigit(*s))
+			return (false);
+		s++;
+	}
+	return (true);
+}
+
+static int	handle_exit(t_stage *st, int *exitcode)
+{
+	ft_putendl_fd("exit", STDERR_FILENO);
+	if (st->argc > 2)
+	{
+		ft_putendl_fd("exit: too many arguments", STDERR_FILENO);
+		return (1);
+	}
+	if (st->argc == 2 && !is_numeric(st->argv[1]))
+	{
+		ft_putstr_fd("exit: ", STDERR_FILENO);
+		ft_putstr_fd(st->argv[1], STDERR_FILENO);
+		ft_putendl_fd(": numeric argument required", STDERR_FILENO);
+		*exitcode = 2;
+		return (USEREXIT);
+	}
+	if (st->argc == 2)
+	{
+		*exitcode = ft_atoi(st->argv[1]) % 256;
+		if (*exitcode < 0)
+			*exitcode += 256;
+	}
+	return (USEREXIT);
 }
 
 bool	is_builtin(const char *name)
@@ -54,11 +87,6 @@ int	run_builtin(t_stage *st, char ***envp, int *exitcode)
 	if (ft_strncmp(n, "env", 4) == 0)
 		return (env(st->argc, st->argv, *envp), 0);
 	if (ft_strncmp(n, "exit", 5) == 0)
-	{
-		ft_putendl_fd("exit", STDERR_FILENO);
-		if (st->argc > 1)
-			apply_exitcode(st, exitcode);
-		return (USEREXIT);
-	}
+		return (handle_exit(st, exitcode));
 	return (1);
 }
