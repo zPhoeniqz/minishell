@@ -3,79 +3,48 @@
 /*                                                        :::      ::::::::   */
 /*   utils2.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: whuth <whuth@student.42berlin.de>          +#+  +:+       +#+        */
+/*   By: pbindl <pbindl@student.42berlin.de>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/05/11 17:11:33 by whuth             #+#    #+#             */
-/*   Updated: 2026/05/11 17:12:24 by whuth            ###   ########.fr       */
+/*   Created: 2026/05/11 20:01:32 by pbindl            #+#    #+#             */
+/*   Updated: 2026/05/11 20:02:26 by pbindl           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../inc/utils.h"
+#include "../libft/libft.h"
+#include <errno.h>
 #include <stdbool.h>
-#include <stdlib.h>
-#include <string.h>
+#include <unistd.h>
 
-void	*ft_realloc(void *ptr, size_t newsize)
+char	*ft_getenv(char **envp, const char *name)
 {
-	void	*out;
+	size_t	len;
+	char	*eqs;
 
-	if (!ptr)
-		return (malloc(newsize));
-	if (ptr && newsize == 0)
-		return (ptr);
-	out = malloc(newsize);
-	if (!out)
-		return (NULL);
-	ft_memmove(out, ptr, newsize);
-	return (out);
-}
-
-void	arr_destroy(void **arr)
-{
-	char	**oarr;
-
-	if (!arr)
-		return ;
-	oarr = (char **)arr;
-	while (*arr)
-		free(*arr++);
-	free(oarr);
-}
-
-char	**dup_env(char **envp)
-{
-	size_t	n;
-	char	**out;
-
-	n = 0;
-	while (envp[n])
-		n++;
-	out = ft_calloc(n + 1, sizeof(char *));
-	if (!out)
-		return (NULL);
-	n = 0;
-	while (envp[n])
+	len = ft_strlen(name);
+	while (*envp)
 	{
-		out[n] = ft_strdup(envp[n]);
-		if (!out[n])
-			return (arr_destroy((void **)out), NULL);
-		n++;
+		if (ft_strncmp(*envp, name, len) == 0)
+		{
+			eqs = ft_strchr(*envp, '=');
+			if (!eqs)
+				return (NULL);
+			return (eqs + 1);
+		}
+		envp++;
 	}
-	return (out);
+	return (NULL);
 }
 
-int	find_env(const char **envp, const char *name)
+bool	ft_isspace(char c)
 {
-	size_t	lname;
-	int		out;
+	return (c == ' ' || c == '\f' || c == '\n' || c == '\r' || c == '\t'
+		|| c == '\v');
+}
 
-	lname = ft_strlen(name);
-	out = 0;
-	while (envp[out])
-	{
-		if (ft_strncmp(name, envp[out], lname) == 0)
-			return (out);
-		out++;
-	}
-	return (-1);
+void	syntaxerr(char invalid)
+{
+	ft_putstr_fd("Syntax error near '", STDERR_FILENO);
+	ft_putchar_fd(invalid, STDERR_FILENO);
+	ft_putendl_fd("'", STDERR_FILENO);
+	errno = EINVAL;
 }

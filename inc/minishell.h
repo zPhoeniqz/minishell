@@ -6,7 +6,7 @@
 /*   By: whuth <whuth@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/19 12:01:21 by whuth             #+#    #+#             */
-/*   Updated: 2026/05/11 13:44:24 by whuth            ###   ########.fr       */
+/*   Updated: 2026/05/11 20:04:43 by pbindl           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,5 +58,7 @@ int					exec(t_data *data, int *exitcode);
 void				tl_destroy(t_tl *tl);
 
 t_tl				*parse(char **envp, char *src, int last_exit_code);
+t_token				*get_next_token(char **envp, char **cursor, int lexit);
+bool				expand_str(char **envp, char **s, int last_exit_code);
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: whuth <whuth@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/22 13:39:28 by whuth             #+#    #+#             */
-/*   Updated: 2026/05/06 17:38:44 by whuth            ###   ########.fr       */
+/*   Updated: 2026/05/11 18:04:17 by pbindl           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,8 +21,8 @@ t_token	*token_init(t_ttype type, char *token, t_token *next_token)
 	if (!out)
 		return (NULL);
 	out->type = type;
-	out->token = ft_strdup(token);
-	if (!out->token && token)
+	out->token = token;
+	if (!out->token)
 		return (free(out), NULL);
 	out->next_token = next_token;
 	return (out);
