@@ -69,6 +69,7 @@ static int	pipe_loop(t_stage *stages, pid_t *pids, t_data *data, int *exitcode)
 	int	prev_read;
 
 	i = 0;
+	prev_read = -1;
 	n = count_stages(data->tokenlist->tokens);
 	while (i < n)
 	{

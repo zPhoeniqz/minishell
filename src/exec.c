@@ -37,6 +37,7 @@ static void	free_stages(t_stage *stages, int n)
 	while (i < n)
 	{
 		free(stages[i].argv);
+		free(stages[i].redirs);
 		i++;
 	}
 	free(stages);
