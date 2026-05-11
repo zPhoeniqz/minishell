@@ -6,7 +6,7 @@
 /*   By: whuth <whuth@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/11 12:11:04 by whuth             #+#    #+#             */
-/*   Updated: 2026/05/11 13:05:03 by whuth            ###   ########.fr       */
+/*   Updated: 2026/05/12 00:14:45 by whuth            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,4 +58,15 @@ int	resolve_heredocs(t_stage *stages, int n, t_heredoc_ctx *ctx)
 		i++;
 	}
 	return (0);
+}
+
+void	heredoc_cleanup(t_heredoc_ctx *ctx)
+{
+	get_next_line(-1);
+	close_heredoc_fds(ctx->stages, ctx->n);
+	free_stages(ctx->stages, ctx->n);
+	tl_destroy(ctx->data->tokenlist);
+	arr_destroy((void **)ctx->data->envp);
+	cwd_state(FREE);
+	free(ctx->data->prompt);
 }

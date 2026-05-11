@@ -6,7 +6,7 @@
 /*   By: whuth <whuth@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/11 11:32:17 by whuth             #+#    #+#             */
-/*   Updated: 2026/05/11 15:14:04 by whuth            ###   ########.fr       */
+/*   Updated: 2026/05/12 00:14:39 by whuth            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,10 +42,11 @@ typedef struct s_stage
 
 typedef struct s_heredoc_ctx
 {
-	t_data		*data;
-	t_stage		*stages;
-	int			n;
-}				t_heredoc_ctx;
+	t_data	*data;
+	t_stage	*stages;
+	int		n;
+	int		write_fd;
+}			t_heredoc_ctx;
 
 int			count_stages(t_token *cur);
 t_token		*build_stage(t_token *cur, t_stage *st);
@@ -58,6 +59,7 @@ int			apply_output(t_stage *st);
 int			resolve_heredocs(t_stage *stages, int n, t_heredoc_ctx *ctx);
 int			resolve_heredoc(t_redir *r, t_heredoc_ctx *ctx);
 void		close_heredoc_fds(t_stage *stages, int n);
+void		heredoc_cleanup(t_heredoc_ctx *ctx);
 
 pid_t		fork_setup(void);
 char		*resolve_path(const char *name, char **envp);
