@@ -6,7 +6,7 @@
 /*   By: whuth <whuth@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/28 18:17:18 by whuth             #+#    #+#             */
-/*   Updated: 2026/05/11 11:54:28 by whuth            ###   ########.fr       */
+/*   Updated: 2026/05/11 15:12:36 by whuth            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-static int	count_stages(t_token *cur)
+int	count_stages(t_token *cur)
 {
 	int	n;
 
@@ -60,7 +60,7 @@ static int	build_all_stages(t_token *cur, t_stage *stages, int n)
 	return (0);
 }
 
-int	exec(t_data *data)
+int	exec(t_data *data, int *exitcode)
 {
 	t_stage	*stages;
 	int		n;
@@ -80,9 +80,9 @@ int	exec(t_data *data)
 		return (1);
 	}
 	if (n == 1)
-		ret = exec_single(&stages[0], &data->envp);
+		ret = exec_single(&stages[0], &data->envp, exitcode);
 	else
-		ret = exec_pipeline(stages, n, data->envp);
+		ret = exec_pipeline(stages, n, data, exitcode);
 	close_heredoc_fds(stages, n);
 	free_stages(stages, n);
 	return (ret);
