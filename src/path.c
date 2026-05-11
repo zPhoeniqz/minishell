@@ -6,7 +6,7 @@
 /*   By: pbindl <pbindl@student.42berlin.de>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/07 17:42:40 by pbindl            #+#    #+#             */
-/*   Updated: 2026/05/10 21:42:34 by pbindl           ###   ########.fr       */
+/*   Updated: 2026/05/11 19:52:13 by pbindl           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,12 +55,13 @@ char	*pathjoin(const char *s1, const char *s2)
 		return (NULL);
 	separator_exists = s1[l1 - 1] == '/' || s2[0] == '/';
 	len = l1 + !separator_exists + ft_strlen(s2) + 1;
-	out = malloc(len);
+	out = ft_calloc(len, 1);
 	if (!out)
 		return (NULL);
 	ft_strlcpy(out, s1, len);
 	if (!separator_exists)
 		out[l1] = '/';
-	ft_strlcat(out, s2, len);
+	if (s2)
+		ft_strlcat(out, s2, len);
 	return (out);
 }

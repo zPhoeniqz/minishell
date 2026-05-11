@@ -6,7 +6,7 @@
 /*   By: pbindl <pbindl@student.42berlin.de>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/17 19:41:36 by pbindl            #+#    #+#             */
-/*   Updated: 2026/05/11 13:44:55 by whuth            ###   ########.fr       */
+/*   Updated: 2026/05/11 20:03:35 by pbindl           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,4 +27,6 @@ int		ft_setenv(char ***envp, const char *name, const char *value,
 char	*ft_getenv(char **envp, const char *name);
 bool	ft_isspace(char c);
 char	**dup_env(char **envp);
+
+void	syntaxerr(char invalid);
 #endif
