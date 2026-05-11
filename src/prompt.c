@@ -42,13 +42,3 @@ int	read_cmd(char **target_buf, char *prompt)
 	*target_buf = input;
 	return (1);
 }
-
-/*/
-int	main(int argc, char **argv, char **envp)
-{
-		(void)argc;
-		(void)argv;
-		addsighandler(SIGQUIT, SIG_IGN, 0);
-		prompt_run(envp);
-}
-//*/
