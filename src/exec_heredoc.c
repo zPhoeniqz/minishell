@@ -52,6 +52,7 @@ static void	heredoc_child(int write_fd, char *delim)
 		free(line);
 	}
 	close(write_fd);
+	get_next_line(-1);
 	exit(0);
 }
 
