@@ -6,7 +6,7 @@
 /*   By: pbindl <pbindl@student.42berlin.de>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/10 21:45:08 by pbindl            #+#    #+#             */
-/*   Updated: 2026/05/10 22:26:44 by pbindl           ###   ########.fr       */
+/*   Updated: 2026/05/11 22:37:49 by pbindl           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -121,10 +121,7 @@ int	export(int ac, char **av, char ***envp)
 		{
 			failures += 1;
 			if (var)
-			{
-				ft_putstr_fd("export: not an identifier: ", STDERR_FILENO);
-				ft_putendl_fd(*var, STDERR_FILENO);
-			}
+				print_ident_err(*var);
 		}
 		if (var)
 			arr_destroy((void **)var);

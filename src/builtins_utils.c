@@ -6,13 +6,14 @@
 /*   By: pbindl <pbindl@student.42berlin.de>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/10 21:45:37 by pbindl            #+#    #+#             */
-/*   Updated: 2026/05/10 21:55:27 by pbindl           ###   ########.fr       */
+/*   Updated: 2026/05/11 22:37:06 by pbindl           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../libft/libft.h"
 #include <stdbool.h>
 #include <stddef.h>
+#include <unistd.h>
 
 int	find_var(char **envp, char *varname)
 {
@@ -43,4 +44,11 @@ bool	check_varname(const char *name)
 		name++;
 	}
 	return (true);
+}
+
+void	print_ident_err(char *s)
+{
+	ft_putstr_fd("export: `", STDERR_FILENO);
+	ft_putstr_fd(s, STDERR_FILENO);
+	ft_putendl_fd("': not a valid identifier", STDERR_FILENO);
 }

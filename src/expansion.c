@@ -6,7 +6,7 @@
 /*   By: pbindl <pbindl@student.42berlin.de>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/11 19:57:20 by pbindl            #+#    #+#             */
-/*   Updated: 2026/05/11 20:46:07 by pbindl           ###   ########.fr       */
+/*   Updated: 2026/05/11 22:20:06 by pbindl           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,7 +83,7 @@ bool	expand_str(char **envp, char **s, int last_exit_code)
 		{
 			end = i + 1;
 			end += (*s)[end] == '?';
-			if ((*s)[end] == i + 1)
+			if (end == i + 1)
 				value = get_value(envp, s, i, &end);
 			else if (!format_exit_code(&value, last_exit_code))
 				return (free(*s), false);

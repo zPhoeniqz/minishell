@@ -6,7 +6,7 @@
 /*   By: pbindl <pbindl@student.42berlin.de>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/21 18:13:45 by pbindl            #+#    #+#             */
-/*   Updated: 2026/05/10 22:20:29 by pbindl           ###   ########.fr       */
+/*   Updated: 2026/05/11 23:48:13 by pbindl           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,15 +57,15 @@ int	unset(int ac, char **av, char ***envp)
 		if (idx < 0)
 			continue ;
 		num_vars = 0;
-		while (envp[num_vars])
+		while ((*envp)[num_vars])
 			num_vars++;
-		free(envp[idx]);
-		while (idx < num_vars - 2)
+		free((*envp)[idx]);
+		while (idx < num_vars - 1)
 		{
-			envp[idx] = envp[idx + 1];
+			(*envp)[idx] = (*envp)[idx + 1];
 			idx++;
 		}
-		envp[num_vars - 2] = 0;
+		(*envp)[num_vars - 1] = 0;
 	}
 	return (0);
 }
@@ -100,8 +100,10 @@ int	echo(int ac, char **av, char **envp)
 
 int	cd(int ac, char **av, char **envp)
 {
-	if (ac != 2)
+	if (ac < 2)
 		return (0);
+	if (ac > 2)
+		return (ft_putendl_fd("cd: too many arguments", STDERR_FILENO), 1);
 	if (chdir(av[1]) < 0)
 	{
 		perror("cd");
