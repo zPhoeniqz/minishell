@@ -6,7 +6,7 @@
 /*   By: whuth <whuth@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/19 12:01:21 by whuth             #+#    #+#             */
-/*   Updated: 2026/05/07 22:13:38 by whuth            ###   ########.fr       */
+/*   Updated: 2026/05/11 13:44:24 by whuth            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,8 +18,8 @@
 # include "utils.h"
 # include <stdbool.h>
 
-#define USEREXIT 256
-#define EMORETOREAD 1000
+# define USEREXIT 256
+# define EMORETOREAD 1000
 
 typedef enum e_ttype
 {

@@ -1,0 +1,55 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   exec_builtin.c                                     :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: whuth <whuth@student.42berlin.de>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/05/11 11:57:03 by whuth             #+#    #+#             */
+/*   Updated: 2026/05/11 13:33:25 by whuth            ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "../inc/exec.h"
+
+bool	is_builtin(const char *name)
+{
+	static const char	*b[] = {"echo", "cd", "pwd", "export", "unset", "env",
+		"exit", NULL};
+	int					i;
+
+	i = 0;
+	while (b[i])
+	{
+		if (ft_strncmp(name, b[i], ft_strlen(b[i]) + 1) == 0)
+			return (true);
+		i++;
+	}
+	return (false);
+}
+
+int	run_builtin(t_stage *st, char ***envp)
+{
+	const char	*n;
+
+	errno = 0;
+	n = st->argv[0];
+	if (ft_strncmp(n, "echo", 5) == 0)
+		return (echo(st->argc, st->argv, *envp));
+	if (ft_strncmp(n, "cd", 3) == 0)
+		return (cd(st->argc, st->argv, *envp));
+	if (ft_strncmp(n, "pwd", 4) == 0)
+		return (pwd(st->argc, st->argv, *envp), 0);
+	if (ft_strncmp(n, "export", 7) == 0)
+		return (export(st->argc, st->argv, envp));
+	if (ft_strncmp(n, "unset", 6) == 0)
+		return (unset(st->argc, st->argv, envp));
+	if (ft_strncmp(n, "env", 4) == 0)
+		return (env(st->argc, st->argv, *envp), 0);
+	if (ft_strncmp(n, "exit", 5) == 0)
+	{
+		ft_putendl_fd("exit", STDERR_FILENO);
+		return (USEREXIT);
+	}
+	return (1);
+}
