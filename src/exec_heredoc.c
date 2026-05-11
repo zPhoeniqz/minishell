@@ -6,22 +6,11 @@
 /*   By: whuth <whuth@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/11 12:09:28 by whuth             #+#    #+#             */
-/*   Updated: 2026/05/11 13:20:07 by whuth            ###   ########.fr       */
+/*   Updated: 2026/05/12 00:21:44 by whuth            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/exec.h"
-
-static void	heredoc_cleanup(t_heredoc_ctx *ctx)
-{
-	get_next_line(-1);
-	close_heredoc_fds(ctx->stages, ctx->n);
-	free_stages(ctx->stages, ctx->n);
-	tl_destroy(ctx->data->tokenlist);
-	arr_destroy((void **)ctx->data->envp);
-	cwd_state(FREE);
-	free(ctx->data->prompt);
-}
 
 static void	heredoc_warning(char *delim)
 {
@@ -38,11 +27,30 @@ static bool	is_delim_line(char *line, char *delim, size_t dlen)
 			|| line[dlen] == '\0'));
 }
 
+static int	handle_heredoc_line(char *line, char *delim, size_t dlen,
+		t_heredoc_ctx *ctx)
+{
+	if (is_delim_line(line, delim, dlen))
+	{
+		free(line);
+		return (1);
+	}
+	if (!expand_str(ctx->data->envp, &line, g_exit_code))
+	{
+		free(line);
+		return (1);
+	}
+	ft_putstr_fd(line, ctx->write_fd);
+	free(line);
+	return (0);
+}
+
 static void	heredoc_child(int write_fd, char *delim, t_heredoc_ctx *ctx)
 {
 	char	*line;
 	size_t	dlen;
 
+	ctx->write_fd = write_fd;
 	dlen = ft_strlen(delim);
 	while (1)
 	{
@@ -54,13 +62,8 @@ static void	heredoc_child(int write_fd, char *delim, t_heredoc_ctx *ctx)
 				heredoc_warning(delim);
 			break ;
 		}
-		if (is_delim_line(line, delim, dlen))
-		{
-			free(line);
+		if (handle_heredoc_line(line, delim, dlen, ctx))
 			break ;
-		}
-		ft_putstr_fd(line, write_fd);
-		free(line);
 	}
 	close(write_fd);
 	heredoc_cleanup(ctx);
