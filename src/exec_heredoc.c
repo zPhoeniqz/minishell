@@ -12,6 +12,17 @@
 
 #include "../inc/exec.h"
 
+static void	heredoc_cleanup(t_heredoc_ctx *ctx)
+{
+	get_next_line(-1);
+	close_heredoc_fds(ctx->stages, ctx->n);
+	free_stages(ctx->stages, ctx->n);
+	tl_destroy(ctx->data->tokenlist);
+	arr_destroy((void **)ctx->data->envp);
+	cwd_state(FREE);
+	free(ctx->data->prompt);
+}
+
 static void	heredoc_warning(char *delim)
 {
 	ft_putchar_fd('\n', STDOUT_FILENO);
@@ -27,7 +38,7 @@ static bool	is_delim_line(char *line, char *delim, size_t dlen)
 			|| line[dlen] == '\0'));
 }
 
-static void	heredoc_child(int write_fd, char *delim)
+static void	heredoc_child(int write_fd, char *delim, t_heredoc_ctx *ctx)
 {
 	char	*line;
 	size_t	dlen;
@@ -52,11 +63,11 @@ static void	heredoc_child(int write_fd, char *delim)
 		free(line);
 	}
 	close(write_fd);
-	get_next_line(-1);
+	heredoc_cleanup(ctx);
 	exit(0);
 }
 
-int	resolve_heredoc(t_redir *r)
+int	resolve_heredoc(t_redir *r, t_heredoc_ctx *ctx)
 {
 	int		p[2];
 	pid_t	pid;
@@ -70,7 +81,7 @@ int	resolve_heredoc(t_redir *r)
 	{
 		addsighandler(SIGINT, SIG_DFL, 0);
 		close(p[0]);
-		heredoc_child(p[1], r->file);
+		heredoc_child(p[1], r->file, ctx);
 	}
 	close(p[1]);
 	waitpid(pid, NULL, 0);

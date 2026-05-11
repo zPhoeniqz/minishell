@@ -40,15 +40,23 @@ typedef struct s_stage
 	int		nredirs;
 }			t_stage;
 
+typedef struct s_heredoc_ctx
+{
+	t_data		*data;
+	t_stage		*stages;
+	int			n;
+}				t_heredoc_ctx;
+
 int			count_stages(t_token *cur);
 t_token		*build_stage(t_token *cur, t_stage *st);
+void		free_stages(t_stage *stages, int n);
 
 bool		push_redir(t_stage *st, t_ttype type, char *file);
 int			apply_input(t_stage *st);
 int			apply_output(t_stage *st);
 
-int			resolve_heredocs(t_stage *stages, int n);
-int			resolve_heredoc(t_redir *r);
+int			resolve_heredocs(t_stage *stages, int n, t_heredoc_ctx *ctx);
+int			resolve_heredoc(t_redir *r, t_heredoc_ctx *ctx);
 void		close_heredoc_fds(t_stage *stages, int n);
 
 pid_t		fork_setup(void);
