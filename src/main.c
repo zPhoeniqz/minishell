@@ -6,7 +6,7 @@
 /*   By: whuth <whuth@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/26 17:48:36 by whuth             #+#    #+#             */
-/*   Updated: 2026/05/11 15:15:30 by whuth            ###   ########.fr       */
+/*   Updated: 2026/05/11 21:06:16 by pbindl           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,9 @@
 
 extern char	**environ;
 
-static bool	init_all(char **prompt, char **input, t_data *data, int *exit_code)
+int			g_exit_code = 0;
+
+static bool	init_all(char **prompt, char **input, t_data *data)
 {
 	*prompt = NULL;
 	*input = NULL;
@@ -33,7 +35,6 @@ static bool	init_all(char **prompt, char **input, t_data *data, int *exit_code)
 		return (false);
 	if (!prompt_create(prompt, cwd_state(UPDATE)))
 		return (arr_destroy((void **)data->envp), false);
-	*exit_code = 0;
 	return (true);
 }
 
@@ -72,9 +73,8 @@ int	main(void)
 	char	*input;
 	int		tmp_status;
 	t_data	data;
-	int		exit_code;
 
-	if (!init_all(&prompt, &input, &data, &exit_code))
+	if (!init_all(&prompt, &input, &data))
 		return (EXIT_FAILURE);
 	while (true)
 	{
@@ -85,10 +85,10 @@ int	main(void)
 			continue ;
 		else if (tmp_status == -1)
 			break ;
-		tmp_status = run(&data, input, &exit_code);
+		tmp_status = run(&data, input, &g_exit_code);
 		if (tmp_status == USEREXIT)
 			break ;
-		exit_code = tmp_status % 256;
+		g_exit_code = tmp_status % 256;
 	}
-	return (free_all(&data, prompt), exit_code);
+	return (free_all(&data, prompt), g_exit_code);
 }

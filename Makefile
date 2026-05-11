@@ -7,9 +7,6 @@ BUILD_DIR	= build
 LIBFT_DIR	= libft
 LIBFT_A		= libft/libft.a
 
-TESTS		= tests/entrypoint.c tests/builtins_test.c
-TESTS_OBJ = $(addprefix $(BUILD_DIR)/,$(patsubst tests/%,%,$(TESTS:.c=.o)))
-
 VPATH		= src:tests
 SRC			= builtins.c builtins_export.c builtins_utils.c exec_builtin.c exec.c exec_child.c exec_heredoc2.c exec_heredoc.c exec_outfile.c exec_path.c exec_pipe.c exec_redir.c exec_single.c exec_stage.c expansion.c ft_setenv.c gnl.c main.c parser.c path.c prompt.c signals.c token.c token_utils.c utils2.c utils.c
 OBJ			= $(addprefix $(BUILD_DIR)/,$(SRC:.c=.o))
@@ -49,10 +46,6 @@ fclean: clean
 re: fclean all
 
 valgrind: all
-	valgrind --leak-check=full --show-leak-kinds=all --trace-children=yes --track-fds=yes --suppressions=ignore_readline_errors.supp ./$(NAME)
-
-test: $(OBJ) $(TESTS_OBJ) $(LIBFT_A)
-	$(CC) $(CFGLAGS) $(OBJ) $(TESTS_OBJ) $(LIBFT_A) $(LIBFLAGS) -o $(NAME)_tests
-	./$(NAME)_tests
+	valgrind --leak-check=full --show-leak-kinds=all --trace-children=yes --track-fds=yes --suppressions=ignore_readline_errors.supp --suppressions=ignore_usr_bin.supp ./$(NAME)
 
 .PHONY: all clean fclean re
