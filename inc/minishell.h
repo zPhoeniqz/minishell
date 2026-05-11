@@ -48,6 +48,7 @@ typedef struct s_data
 {
 	t_tl			*tokenlist;
 	char			**envp;
+	char			*prompt;
 }					t_data;
 
 t_token				*token_init(t_ttype type, char *token, t_token *next_token);

@@ -29,7 +29,7 @@ int	count_stages(t_token *cur)
 	return (n);
 }
 
-static void	free_stages(t_stage *stages, int n)
+void	free_stages(t_stage *stages, int n)
 {
 	int	i;
 
@@ -61,6 +61,16 @@ static int	build_all_stages(t_token *cur, t_stage *stages, int n)
 	return (0);
 }
 
+static int	run_heredocs(t_stage *stages, int n, t_data *data)
+{
+	t_heredoc_ctx	ctx;
+
+	ctx.data = data;
+	ctx.stages = stages;
+	ctx.n = n;
+	return (resolve_heredocs(stages, n, &ctx));
+}
+
 int	exec(t_data *data, int *exitcode)
 {
 	t_stage	*stages;
@@ -75,7 +85,7 @@ int	exec(t_data *data, int *exitcode)
 		return (perror("calloc"), 1);
 	if (build_all_stages(data->tokenlist->tokens, stages, n) == -1)
 		return (1);
-	if (resolve_heredocs(stages, n) == -1)
+	if (run_heredocs(stages, n, data) == -1)
 	{
 		free_stages(stages, n);
 		return (1);

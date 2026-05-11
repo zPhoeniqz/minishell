@@ -34,7 +34,7 @@ void	close_heredoc_fds(t_stage *stages, int n)
 	}
 }
 
-int	resolve_heredocs(t_stage *stages, int n)
+int	resolve_heredocs(t_stage *stages, int n, t_heredoc_ctx *ctx)
 {
 	int	i;
 	int	j;
@@ -47,7 +47,7 @@ int	resolve_heredocs(t_stage *stages, int n)
 		{
 			if (stages[i].redirs[j].type == Heredoc)
 			{
-				if (resolve_heredoc(&stages[i].redirs[j]) == -1)
+				if (resolve_heredoc(&stages[i].redirs[j], ctx) == -1)
 				{
 					close_heredoc_fds(stages, n);
 					return (-1);

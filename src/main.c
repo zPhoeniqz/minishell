@@ -85,6 +85,7 @@ int	main(void)
 			continue ;
 		else if (tmp_status == -1)
 			break ;
+		data.prompt = prompt;
 		tmp_status = run(&data, input, &g_exit_code);
 		if (tmp_status == USEREXIT)
 			break ;
