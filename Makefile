@@ -15,7 +15,7 @@ SRC			= builtins.c builtins_export.c builtins_utils.c exec.c \
 			  exec_builtin.c exec_child.c exec_heredoc.c exec_heredoc2.c \
 			  exec_outfile.c exec_path.c exec_pipe.c exec_redir.c exec_single.c \
 			  exec_stage.c gnl.c main.c parser.c path.c prompt.c signals.c \
-			  token_utils.c utils.c
+			  token_utils.c utils.c utils2.c
 OBJ			= $(addprefix $(BUILD_DIR)/,$(SRC:.c=.o))
 
 CC			= gcc
