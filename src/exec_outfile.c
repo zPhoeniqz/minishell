@@ -6,7 +6,7 @@
 /*   By: whuth <whuth@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/11 12:08:10 by whuth             #+#    #+#             */
-/*   Updated: 2026/05/11 13:22:18 by whuth            ###   ########.fr       */
+/*   Updated: 2026/05/12 01:08:30 by whuth            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,9 +35,15 @@ int	apply_output(t_stage *st)
 		{
 			fd = open_outfile(&st->redirs[i]);
 			if (fd == -1)
-				return (perror(st->redirs[i].file), -1);
-			if (i == st->nredirs - 1)
-				dup2(fd, STDOUT_FILENO);
+			{
+				perror(st->redirs[i].file);
+				return (-1);
+			}
+			if (dup2(fd, STDOUT_FILENO) == -1)
+			{
+				close(fd);
+				return (perror("dup2"), -1);
+			}
 			close(fd);
 		}
 		i++;

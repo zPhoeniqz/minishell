@@ -22,7 +22,7 @@ static int	argv_push(t_stage *st, int *cap, char *token)
 {
 	char	**tmp;
 
-	if (st->argc + 1 < *cap)
+	if (st->argc < *cap - 1)
 	{
 		st->argv[st->argc++] = token;
 		return (0);

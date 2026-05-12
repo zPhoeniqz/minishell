@@ -68,7 +68,6 @@ static int	run_heredocs(t_stage *stages, int n, t_data *data)
 	ctx.data = data;
 	ctx.stages = stages;
 	ctx.n = n;
-	ctx.write_fd = 0;
 	return (resolve_heredocs(stages, n, &ctx));
 }
 

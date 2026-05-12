@@ -22,7 +22,7 @@
 # include <stdio.h>
 # include <stdlib.h>
 # include <sys/types.h>
-# include <sys/wait.h>
+#include <sys/wait.h>
 # include <unistd.h>
 
 typedef struct s_redir
@@ -45,7 +45,6 @@ typedef struct s_heredoc_ctx
 	t_data	*data;
 	t_stage	*stages;
 	int		n;
-	int		write_fd;
 }			t_heredoc_ctx;
 
 int			count_stages(t_token *cur);
