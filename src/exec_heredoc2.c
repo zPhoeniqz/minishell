@@ -24,10 +24,7 @@ void	close_heredoc_fds(t_stage *stages, int n)
 		while (j < stages[i].nredirs)
 		{
 			if (stages[i].redirs[j].fd != -1)
-			{
 				close(stages[i].redirs[j].fd);
-				stages[i].redirs[j].fd = -1;
-			}
 			j++;
 		}
 		i++;
