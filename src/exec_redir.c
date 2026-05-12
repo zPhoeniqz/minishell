@@ -6,7 +6,7 @@
 /*   By: whuth <whuth@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/11 12:06:46 by whuth             #+#    #+#             */
-/*   Updated: 2026/05/11 12:07:46 by whuth            ###   ########.fr       */
+/*   Updated: 2026/05/12 13:02:43 by pbindl           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,8 @@ int	apply_input(t_stage *st)
 	i = 0;
 	while (i < st->nredirs)
 	{
-		if (st->redirs[i].type == Heredoc)
+		if (st->redirs[i].type == Heredoc
+			|| st->redirs[i].type == HeredocExpand)
 		{
 			if (apply_heredoc(&st->redirs[i]) == -1)
 				return (-1);

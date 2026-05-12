@@ -6,7 +6,7 @@
 /*   By: whuth <whuth@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/11 11:54:43 by whuth             #+#    #+#             */
-/*   Updated: 2026/05/11 13:31:14 by whuth            ###   ########.fr       */
+/*   Updated: 2026/05/12 13:07:42 by pbindl           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 static bool	is_redir_type(t_ttype type)
 {
 	return (type == InFile || type == OutFile || type == OutFileAppend
-		|| type == Heredoc);
+		|| type == Heredoc || type == HeredocExpand);
 }
 
 static int	argv_push(t_stage *st, int *cap, char *token)

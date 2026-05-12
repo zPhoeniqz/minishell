@@ -6,10 +6,9 @@
 /*   By: whuth <whuth@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/11 12:08:10 by whuth             #+#    #+#             */
-/*   Updated: 2026/05/12 01:08:30 by whuth            ###   ########.fr       */
+/*   Updated: 2026/05/12 13:16:16 by pbindl           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
 #include "../inc/exec.h"
 
 static int	open_outfile(t_redir *r)

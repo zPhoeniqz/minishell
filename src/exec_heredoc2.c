@@ -6,7 +6,7 @@
 /*   By: whuth <whuth@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/11 12:11:04 by whuth             #+#    #+#             */
-/*   Updated: 2026/05/12 00:14:45 by whuth            ###   ########.fr       */
+/*   Updated: 2026/05/12 13:07:05 by pbindl           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,8 @@ int	resolve_heredocs(t_stage *stages, int n, t_heredoc_ctx *ctx)
 		j = 0;
 		while (j < stages[i].nredirs)
 		{
-			if (stages[i].redirs[j].type == Heredoc)
+			if (stages[i].redirs[j].type == Heredoc
+				|| stages[i].redirs[j].type == HeredocExpand)
 			{
 				if (resolve_heredoc(&stages[i].redirs[j], ctx) == -1)
 				{

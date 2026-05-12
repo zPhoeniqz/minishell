@@ -6,7 +6,7 @@
 /*   By: whuth <whuth@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/11 11:32:17 by whuth             #+#    #+#             */
-/*   Updated: 2026/05/12 00:14:39 by whuth            ###   ########.fr       */
+/*   Updated: 2026/05/12 13:18:57 by pbindl           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@
 # include <stdio.h>
 # include <stdlib.h>
 # include <sys/types.h>
-#include <sys/wait.h>
+# include <sys/wait.h>
 # include <unistd.h>
 
 typedef struct s_redir

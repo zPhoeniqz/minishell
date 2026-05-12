@@ -6,7 +6,7 @@
 /*   By: whuth <whuth@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/11 12:09:28 by whuth             #+#    #+#             */
-/*   Updated: 2026/05/12 11:34:33 by whuth            ###   ########.fr       */
+/*   Updated: 2026/05/12 13:06:20 by pbindl           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,26 +27,27 @@ static bool	is_delim_line(char *line, char *delim, size_t dlen)
 			|| line[dlen] == '\0'));
 }
 
-static int	handle_heredoc_line(char *line, char *delim, size_t dlen,
+static int	handle_heredoc_line(char *line, t_redir *redir, size_t dlen,
 		t_heredoc_ctx *ctx)
 {
-	if (is_delim_line(line, delim, dlen))
+	if (is_delim_line(line, redir->file, dlen))
 	{
 		free(line);
 		return (1);
 	}
-	expand_str(ctx->data->envp, &line, g_exit_code);
+	if (redir->type == HeredocExpand)
+		expand_str(ctx->data->envp, &line, g_exit_code);
 	ft_putstr_fd(line, ctx->write_fd);
 	free(line);
 	return (0);
 }
 
-static void	heredoc_child(int write_fd, char *delim, t_heredoc_ctx *ctx)
+static void	heredoc_child(int write_fd, t_redir *redir, t_heredoc_ctx *ctx)
 {
 	char	*line;
 	size_t	dlen;
 
-	dlen = ft_strlen(delim);
+	dlen = ft_strlen(redir->file);
 	ctx->write_fd = write_fd;
 	while (1)
 	{
@@ -55,10 +56,10 @@ static void	heredoc_child(int write_fd, char *delim, t_heredoc_ctx *ctx)
 		if (!line)
 		{
 			if (errno == 0)
-				heredoc_warning(delim);
+				heredoc_warning(redir->file);
 			break ;
 		}
-		if (handle_heredoc_line(line, delim, dlen, ctx))
+		if (handle_heredoc_line(line, redir, dlen, ctx))
 			break ;
 	}
 	close(write_fd);
@@ -80,7 +81,7 @@ int	resolve_heredoc(t_redir *r, t_heredoc_ctx *ctx)
 	{
 		addsighandler(SIGINT, SIG_DFL, 0);
 		close(p[0]);
-		heredoc_child(p[1], r->file, ctx);
+		heredoc_child(p[1], r, ctx);
 	}
 	close(p[1]);
 	waitpid(pid, NULL, 0);
