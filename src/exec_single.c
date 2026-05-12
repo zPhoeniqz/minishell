@@ -6,7 +6,7 @@
 /*   By: whuth <whuth@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/11 11:58:34 by whuth             #+#    #+#             */
-/*   Updated: 2026/05/12 15:12:46 by pbindl           ###   ########.fr       */
+/*   Updated: 2026/05/13 00:36:28 by whuth            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,7 @@ static int	wait_child(pid_t pid)
 int	exec_single(t_stage *st, t_data *data, volatile int *exitcode)
 {
 	pid_t	pid;
-      t_stage cur_stage;
+	t_stage	cur_stage;
 
 	if (!st->argv || !st->argv[0])
 		return (0);
@@ -63,9 +63,10 @@ int	exec_single(t_stage *st, t_data *data, volatile int *exitcode)
 	pid = fork_setup();
 	if (pid == -1)
 		return (perror("fork"), 1);
-	if (pid == 0) {
-            rescue_stage(&cur_stage, st, 0, 1);
+	if (pid == 0)
+	{
+		rescue_stage(&cur_stage, st, 0, 1);
 		exec_child(&cur_stage, data, exitcode);
-      }
+	}
 	return (wait_child(pid));
 }

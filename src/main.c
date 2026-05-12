@@ -6,7 +6,7 @@
 /*   By: whuth <whuth@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/26 17:48:36 by whuth             #+#    #+#             */
-/*   Updated: 2026/05/12 16:45:18 by pbindl           ###   ########.fr       */
+/*   Updated: 2026/05/13 00:43:45 by whuth            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,10 +15,10 @@
 #include "../inc/prompt.h"
 #include "../inc/signals.h"
 #include <errno.h>
-#include <stdio.h>
 #include <readline/readline.h>
 #include <signal.h>
 #include <stdbool.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 
@@ -33,20 +33,15 @@ static bool	init_all(char **prompt, char **input, t_data *data)
 	data->envp = dup_env(environ);
 	if (!data->envp)
 		return (false);
-	if (!prompt_create(prompt, cwd_state(UPDATE)))
-		return (arr_destroy((void **)data->envp), false);
 	return (true);
 }
 
-static void	free_all(t_data *data, char **prompt, bool truly_all)
+static void	free_all(t_data *data, char **prompt)
 {
-      if(truly_all)
-            free(*prompt);
-      *prompt = NULL;
-      if(truly_all)
-            cwd_state(FREE);
-      if(truly_all)
-            arr_destroy((void **)data->envp);
+	free(*prompt);
+	*prompt = NULL;
+	cwd_state(FREE);
+	arr_destroy((void **)data->envp);
 	rl_clear_history();
 }
 
@@ -56,9 +51,7 @@ static int	run(t_data *data, char *input, volatile int *exit_code)
 
 	out = -1;
 	data->tokenlist = parse(data->envp, input, *exit_code);
-	free(data->prompt);
-      free(input);
-      data->prompt = NULL;
+	free(input);
 	if (errno != 0)
 		*exit_code = 2;
 	if (data->tokenlist)
@@ -94,7 +87,10 @@ int	main(void)
 	while (true)
 	{
 		addsighandler(SIGINT, sigfunc_redisplay_prompt, 0);
-		prompt_create(&prompt, cwd_state(READ));
+		free(prompt);
+		prompt = NULL;
+		if (!prompt_create(&prompt, cwd_state(READ)))
+			break ;
 		tmp_status = read_cmd(&input, prompt);
 		if (tmp_status == 0)
 			continue ;
@@ -105,7 +101,6 @@ int	main(void)
 		if (tmp_status == USEREXIT)
 			break ;
 		g_exit_code = tmp_status % 256;
-            free_all(&data, &prompt, false);
 	}
-	return (handle_shlvl(data.envp), free_all(&data, &prompt, true), g_exit_code);
+	return (handle_shlvl(data.envp), free_all(&data, &prompt), g_exit_code);
 }

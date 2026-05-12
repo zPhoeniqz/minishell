@@ -48,14 +48,13 @@ static int	handle_exit(t_stage *st, volatile int *exitcode)
 		if (*exitcode < 0)
 			*exitcode += 256;
 	}
-	// ft_putendl_fd("exit", STDERR_FILENO);
 	return (USEREXIT);
 }
 
 bool	is_builtin(const char *name)
 {
 	static const char	*b[] = {"echo", "cd", "pwd", "export", "unset", "env",
-			"exit", NULL};
+		"exit", NULL};
 	int					i;
 
 	i = 0;

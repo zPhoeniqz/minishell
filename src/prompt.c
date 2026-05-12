@@ -24,8 +24,8 @@
 
 char	*prompt_create(char **buf, const char *path)
 {
-      if(*buf)
-            free(*buf);
+	if (*buf)
+		free(*buf);
 	*buf = ft_strjoin(path, "> ");
 	return (*buf);
 }
