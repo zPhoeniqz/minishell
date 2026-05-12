@@ -32,46 +32,42 @@ bool	push_redir(t_stage *st, t_ttype type, char *file)
 	return (true);
 }
 
-static int	apply_heredoc(t_redir *r)
+static int	open_redir(t_redir *r)
 {
-	if (r->fd == -1)
-		return (-1);
-	dup2(r->fd, STDIN_FILENO);
-	close(r->fd);
-	r->fd = -1;
-	return (0);
+	if (r->type == InFile)
+		return (open(r->file, O_RDONLY));
+	if (r->type == OutFile)
+		return (open(r->file,
+				O_WRONLY | O_CREAT | O_TRUNC, 0644));
+	if (r->type == OutFileAppend)
+		return (open(r->file,
+				O_WRONLY | O_CREAT | O_APPEND, 0644));
+	if (r->type == Heredoc || r->type == HeredocExpand)
+		return (r->fd);
+	return (-1);
 }
 
-static int	apply_infile(t_redir *r)
-{
-	int	fd;
-
-	fd = open(r->file, O_RDONLY);
-	if (fd == -1)
-		return (perror(r->file), -1);
-	dup2(fd, STDIN_FILENO);
-	close(fd);
-	return (0);
-}
-
-int	apply_input(t_stage *st)
+int	apply_redirs(t_stage *st)
 {
 	int	i;
+	int	fd;
 
 	i = 0;
 	while (i < st->nredirs)
 	{
-		if (st->redirs[i].type == Heredoc
+		fd = open_redir(&st->redirs[i]);
+		if (fd < 0)
+			return (perror(st->redirs[i].file), -1);
+		if (st->redirs[i].type == InFile
+			|| st->redirs[i].type == Heredoc
 			|| st->redirs[i].type == HeredocExpand)
 		{
-			if (apply_heredoc(&st->redirs[i]) == -1)
-				return (-1);
+			if (dup2(fd, STDIN_FILENO) < 0)
+				return (close(fd), perror("dup2"), -1);
 		}
-		else if (st->redirs[i].type == InFile)
-		{
-			if (apply_infile(&st->redirs[i]) == -1)
-				return (-1);
-		}
+		else if (dup2(fd, STDOUT_FILENO) < 0)
+			return (close(fd), perror("dup2"), -1);
+		close(fd);
 		i++;
 	}
 	return (0);
