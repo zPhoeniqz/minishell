@@ -6,7 +6,7 @@
 /*   By: whuth <whuth@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/11 11:58:34 by whuth             #+#    #+#             */
-/*   Updated: 2026/05/11 15:11:41 by whuth            ###   ########.fr       */
+/*   Updated: 2026/05/12 15:12:46 by pbindl           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,8 @@ static void	restore_fds(int saved_in, int saved_out)
 	close(saved_out);
 }
 
-static int	exec_builtin_with_redirs(t_stage *st, char ***envp, int *exitcode)
+static int	exec_builtin_with_redirs(t_stage *st, char ***envp,
+		volatile int *exitcode)
 {
 	int	saved_in;
 	int	saved_out;
@@ -50,18 +51,21 @@ static int	wait_child(pid_t pid)
 	return (1);
 }
 
-int	exec_single(t_stage *st, char ***envp, int *exitcode)
+int	exec_single(t_stage *st, t_data *data, volatile int *exitcode)
 {
 	pid_t	pid;
+      t_stage cur_stage;
 
 	if (!st->argv || !st->argv[0])
 		return (0);
 	if (is_builtin(st->argv[0]))
-		return (exec_builtin_with_redirs(st, envp, exitcode));
+		return (exec_builtin_with_redirs(st, &data->envp, exitcode));
 	pid = fork_setup();
 	if (pid == -1)
 		return (perror("fork"), 1);
-	if (pid == 0)
-		exec_child(st, *envp, exitcode);
+	if (pid == 0) {
+            rescue_stage(&cur_stage, st, 0, 1);
+		exec_child(&cur_stage, data, exitcode);
+      }
 	return (wait_child(pid));
 }

@@ -6,7 +6,7 @@
 /*   By: whuth <whuth@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/11 11:57:03 by whuth             #+#    #+#             */
-/*   Updated: 2026/05/12 13:10:33 by pbindl           ###   ########.fr       */
+/*   Updated: 2026/05/12 16:12:50 by pbindl           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ static bool	is_numeric(const char *s)
 	return (true);
 }
 
-static int	handle_exit(t_stage *st, int *exitcode)
+static int	handle_exit(t_stage *st, volatile int *exitcode)
 {
 	if (st->argc > 2)
 	{
@@ -48,14 +48,14 @@ static int	handle_exit(t_stage *st, int *exitcode)
 		if (*exitcode < 0)
 			*exitcode += 256;
 	}
-	ft_putendl_fd("exit", STDERR_FILENO);
+	// ft_putendl_fd("exit", STDERR_FILENO);
 	return (USEREXIT);
 }
 
 bool	is_builtin(const char *name)
 {
 	static const char	*b[] = {"echo", "cd", "pwd", "export", "unset", "env",
-		"exit", NULL};
+			"exit", NULL};
 	int					i;
 
 	i = 0;
@@ -68,7 +68,7 @@ bool	is_builtin(const char *name)
 	return (false);
 }
 
-int	run_builtin(t_stage *st, char ***envp, int *exitcode)
+int	run_builtin(t_stage *st, char ***envp, volatile int *exitcode)
 {
 	const char	*n;
 

@@ -72,7 +72,7 @@ static int	run_heredocs(t_stage *stages, int n, t_data *data)
 	return (resolve_heredocs(stages, n, &ctx));
 }
 
-int	exec(t_data *data, int *exitcode)
+int	exec(t_data *data, volatile int *exitcode)
 {
 	t_stage	*stages;
 	int		n;
@@ -91,8 +91,8 @@ int	exec(t_data *data, int *exitcode)
 		free_stages(stages, n);
 		return (1);
 	}
-	if (n == 1)
-		ret = exec_single(&stages[0], &data->envp, exitcode);
+	if (n == 1) 
+		ret = exec_single(stages, data, exitcode);
 	else
 		ret = exec_pipeline(stages, n, data, exitcode);
 	close_heredoc_fds(stages, n);

@@ -6,16 +6,15 @@
 /*   By: pbindl <pbindl@student.42berlin.de>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/13 18:27:41 by pbindl            #+#    #+#             */
-/*   Updated: 2026/05/11 20:57:08 by pbindl           ###   ########.fr       */
+/*   Updated: 2026/05/12 16:46:18 by pbindl           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/signals.h"
 #include "../libft/libft.h"
-#include <readline/readline.h>
 #include <signal.h>
 #include <stdio.h>
-#include <stdlib.h>
+#include <readline/readline.h>
 #include <sys/wait.h>
 #include <unistd.h>
 

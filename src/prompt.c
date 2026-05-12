@@ -13,10 +13,10 @@
 
 #include "../libft/libft.h"
 #include <linux/limits.h>
+#include <stdio.h>
 #include <readline/history.h>
 #include <readline/readline.h>
 #include <stdbool.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <sys/types.h>
 #include <sys/wait.h>
@@ -24,7 +24,8 @@
 
 char	*prompt_create(char **buf, const char *path)
 {
-	free(*buf);
+      if(*buf)
+            free(*buf);
 	*buf = ft_strjoin(path, "> ");
 	return (*buf);
 }

@@ -6,7 +6,7 @@
 /*   By: whuth <whuth@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/11 11:32:17 by whuth             #+#    #+#             */
-/*   Updated: 2026/05/12 13:18:57 by pbindl           ###   ########.fr       */
+/*   Updated: 2026/05/12 15:11:58 by pbindl           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,6 +51,7 @@ typedef struct s_heredoc_ctx
 int			count_stages(t_token *cur);
 t_token		*build_stage(t_token *cur, t_stage *st);
 void		free_stages(t_stage *stages, int n);
+void rescue_stage(t_stage *target, t_stage *stages, int idx, int n);
 
 bool		push_redir(t_stage *st, t_ttype type, char *file);
 int			apply_redirs(t_stage *st);
@@ -62,12 +63,13 @@ void		heredoc_cleanup(t_heredoc_ctx *ctx);
 
 pid_t		fork_setup(void);
 char		*resolve_path(const char *name, char **envp);
-void		exec_child(t_stage *st, char **envp, int *exitcode);
+void		exec_child(t_stage *st, t_data *data, volatile int *exitcode);
 
 bool		is_builtin(const char *name);
-int			run_builtin(t_stage *st, char ***envp, int *exitcode);
-int			exec_single(t_stage *st, char ***envp, int *exitcode);
+int			run_builtin(t_stage *st, char ***envp, volatile int *exitcode);
+int			exec_single(t_stage *st, t_data *data, volatile int *exitcode);
 
-int			exec_pipeline(t_stage *stages, int n, t_data *data, int *exitcode);
+int			exec_pipeline(t_stage *stages, int n, t_data *data,
+				volatile int *exitcode);
 
 #endif
