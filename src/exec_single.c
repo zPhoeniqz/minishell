@@ -6,7 +6,7 @@
 /*   By: whuth <whuth@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/11 11:58:34 by whuth             #+#    #+#             */
-/*   Updated: 2026/05/11 15:11:41 by whuth            ###   ########.fr       */
+/*   Updated: 2026/05/12 15:12:46 by pbindl           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,8 @@ static void	restore_fds(int saved_in, int saved_out)
 	close(saved_out);
 }
 
-static int	exec_builtin_with_redirs(t_stage *st, char ***envp, int *exitcode)
+static int	exec_builtin_with_redirs(t_stage *st, char ***envp,
+		volatile int *exitcode)
 {
 	int	saved_in;
 	int	saved_out;
@@ -50,7 +51,7 @@ static int	wait_child(pid_t pid)
 	return (1);
 }
 
-int	exec_single(t_stage *st, char ***envp, int *exitcode)
+int	exec_single(t_stage *st, char ***envp, volatile int *exitcode)
 {
 	pid_t	pid;
 

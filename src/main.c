@@ -6,7 +6,7 @@
 /*   By: whuth <whuth@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/26 17:48:36 by whuth             #+#    #+#             */
-/*   Updated: 2026/05/11 23:42:09 by pbindl           ###   ########.fr       */
+/*   Updated: 2026/05/12 15:42:18 by pbindl           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,9 +22,9 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-extern char	**environ;
+extern char		**environ;
 
-int			g_exit_code = 0;
+volatile int	g_exit_code = 0;
 
 static bool	init_all(char **prompt, char **input, t_data *data)
 {
@@ -46,7 +46,7 @@ static void	free_all(t_data *data, char *prompt)
 	rl_clear_history();
 }
 
-static int	run(t_data *data, char *input, int *exit_code)
+static int	run(t_data *data, char *input, volatile int *exit_code)
 {
 	int	out;
 
@@ -79,7 +79,10 @@ int	main(void)
 	while (true)
 	{
 		addsighandler(SIGINT, sigfunc_redisplay_prompt, 0);
-		prompt_create(&prompt, cwd_state(READ));
+		if (g_exit_code == 130)
+			sigfunc_return_to_prompt(0);
+		else
+			prompt_create(&prompt, cwd_state(READ));
 		tmp_status = read_cmd(&input, prompt);
 		if (tmp_status == 0)
 			continue ;
