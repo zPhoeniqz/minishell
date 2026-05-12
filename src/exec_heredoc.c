@@ -6,7 +6,7 @@
 /*   By: whuth <whuth@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/11 12:09:28 by whuth             #+#    #+#             */
-/*   Updated: 2026/05/12 00:21:44 by whuth            ###   ########.fr       */
+/*   Updated: 2026/05/12 11:34:33 by whuth            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,14 +27,16 @@ static bool	is_delim_line(char *line, char *delim, size_t dlen)
 			|| line[dlen] == '\0'));
 }
 
-static int	handle_heredoc_line(char *line, char *delim, size_t dlen, int fd)
+static int	handle_heredoc_line(char *line, char *delim, size_t dlen,
+		t_heredoc_ctx *ctx)
 {
 	if (is_delim_line(line, delim, dlen))
 	{
 		free(line);
 		return (1);
 	}
-	ft_putstr_fd(line, fd);
+	expand_str(ctx->data->envp, &line, g_exit_code);
+	ft_putstr_fd(line, ctx->write_fd);
 	free(line);
 	return (0);
 }
@@ -45,6 +47,7 @@ static void	heredoc_child(int write_fd, char *delim, t_heredoc_ctx *ctx)
 	size_t	dlen;
 
 	dlen = ft_strlen(delim);
+	ctx->write_fd = write_fd;
 	while (1)
 	{
 		write(STDERR_FILENO, "> ", 2);
@@ -55,7 +58,7 @@ static void	heredoc_child(int write_fd, char *delim, t_heredoc_ctx *ctx)
 				heredoc_warning(delim);
 			break ;
 		}
-		if (handle_heredoc_line(line, delim, dlen, write_fd))
+		if (handle_heredoc_line(line, delim, dlen, ctx))
 			break ;
 	}
 	close(write_fd);
