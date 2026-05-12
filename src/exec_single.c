@@ -54,6 +54,7 @@ static int	wait_child(pid_t pid)
 int	exec_single(t_stage *st, t_data *data, volatile int *exitcode)
 {
 	pid_t	pid;
+      t_stage cur_stage;
 
 	if (!st->argv || !st->argv[0])
 		return (0);
@@ -62,7 +63,9 @@ int	exec_single(t_stage *st, t_data *data, volatile int *exitcode)
 	pid = fork_setup();
 	if (pid == -1)
 		return (perror("fork"), 1);
-	if (pid == 0)
-		exec_child(st, data, exitcode);
+	if (pid == 0) {
+            rescue_stage(&cur_stage, st, 0, 1);
+		exec_child(&cur_stage, data, exitcode);
+      }
 	return (wait_child(pid));
 }

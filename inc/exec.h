@@ -51,6 +51,7 @@ typedef struct s_heredoc_ctx
 int			count_stages(t_token *cur);
 t_token		*build_stage(t_token *cur, t_stage *st);
 void		free_stages(t_stage *stages, int n);
+void rescue_stage(t_stage *target, t_stage *stages, int idx, int n);
 
 bool		push_redir(t_stage *st, t_ttype type, char *file);
 int			apply_redirs(t_stage *st);

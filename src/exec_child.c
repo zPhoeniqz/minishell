@@ -13,7 +13,16 @@
 #include "../inc/exec.h"
 #include <readline/readline.h>
 
-static void	exec_external(t_stage *st, char **envp)
+static void child_free(t_data *data, t_stage *st) {
+      arr_destroy((void **)data->envp);
+      rl_clear_history();
+      tl_destroy(data->tokenlist);
+      free(st->redirs);
+      free(st->argv);
+      cwd_state(FREE);
+}
+
+static int exec_external(t_stage *st, char **envp)
 {
 	char	*path;
 
@@ -22,12 +31,12 @@ static void	exec_external(t_stage *st, char **envp)
 	{
 		ft_putstr_fd(st->argv[0], STDERR_FILENO);
 		ft_putstr_fd(": command not found\n", STDERR_FILENO);
-		exit(127);
+		return 127;
 	}
 	execve(path, st->argv, envp);
 	perror(st->argv[0]);
 	free(path);
-	exit(126);
+      return 126;
 }
 
 void	exec_child(t_stage *st, t_data *data, volatile int *exitcode)
@@ -38,16 +47,10 @@ void	exec_child(t_stage *st, t_data *data, volatile int *exitcode)
 		exit(1);
 	if (!st->argv || !st->argv[0])
 		exit(0);
-	if (is_builtin(st->argv[0]))
-	{
-		ret = run_builtin(st, &data->envp, exitcode);
-		arr_destroy((void **)data->envp);
-		rl_clear_history();
-            tl_destroy(data->tokenlist);
-            free(st->redirs);
-            free(st->argv);
-            cwd_state(FREE);
-		exit(ret);
-	}
-	exec_external(st, data->envp);
+      if (!is_builtin(st->argv[0]))
+            ret = exec_external(st, data->envp);
+      else
+            ret = run_builtin(st, &data->envp, exitcode);
+      child_free(data, st);
+      exit(ret);
 }
