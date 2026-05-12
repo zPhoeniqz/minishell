@@ -6,7 +6,7 @@
 /*   By: whuth <whuth@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/11 11:57:03 by whuth             #+#    #+#             */
-/*   Updated: 2026/05/12 15:12:23 by pbindl           ###   ########.fr       */
+/*   Updated: 2026/05/12 16:12:50 by pbindl           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,7 @@ static int	handle_exit(t_stage *st, volatile int *exitcode)
 		if (*exitcode < 0)
 			*exitcode += 256;
 	}
-	ft_putendl_fd("exit", STDERR_FILENO);
+	// ft_putendl_fd("exit", STDERR_FILENO);
 	return (USEREXIT);
 }
 

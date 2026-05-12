@@ -6,7 +6,7 @@
 /*   By: whuth <whuth@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/11 12:00:36 by whuth             #+#    #+#             */
-/*   Updated: 2026/05/12 15:23:27 by pbindl           ###   ########.fr       */
+/*   Updated: 2026/05/12 16:48:35 by pbindl           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ pid_t	fork_setup(void)
 	if (out == 0)
 		addsighandler(SIGINT, SIG_DFL, 0);
 	else
-		addsighandler(SIGINT, SIG_IGN, 0);
+		addsighandler(SIGINT, sigfunc_return_to_prompt, 0);
 	return (out);
 }
 

@@ -6,7 +6,7 @@
 /*   By: whuth <whuth@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/26 17:48:36 by whuth             #+#    #+#             */
-/*   Updated: 2026/05/12 15:42:18 by pbindl           ###   ########.fr       */
+/*   Updated: 2026/05/12 16:45:18 by pbindl           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,6 +67,15 @@ static int	run(t_data *data, char *input, volatile int *exit_code)
 	return (out);
 }
 
+void	handle_shlvl(char **envp)
+{
+	int	exit_code;
+
+	exit_code = ft_atoi(ft_getenv(envp, "SHLVL"));
+	if (exit_code > 0)
+		ft_putstr_fd("exit\n", STDOUT_FILENO);
+}
+
 int	main(void)
 {
 	char	*prompt;
@@ -79,10 +88,7 @@ int	main(void)
 	while (true)
 	{
 		addsighandler(SIGINT, sigfunc_redisplay_prompt, 0);
-		if (g_exit_code == 130)
-			sigfunc_return_to_prompt(0);
-		else
-			prompt_create(&prompt, cwd_state(READ));
+		prompt_create(&prompt, cwd_state(READ));
 		tmp_status = read_cmd(&input, prompt);
 		if (tmp_status == 0)
 			continue ;
@@ -94,5 +100,5 @@ int	main(void)
 			break ;
 		g_exit_code = tmp_status % 256;
 	}
-	return (free_all(&data, prompt), g_exit_code);
+	return (handle_shlvl(data.envp), free_all(&data, prompt), g_exit_code);
 }
