@@ -31,9 +31,7 @@ static void	exec_external(t_stage *st, char **envp)
 
 void	exec_child(t_stage *st, char **envp, int *exitcode)
 {
-	if (apply_input(st) == -1)
-		exit(1);
-	if (apply_output(st) == -1)
+	if (apply_redirs(st) == -1)
 		exit(1);
 	if (!st->argv || !st->argv[0])
 		exit(0);

@@ -28,7 +28,7 @@ static int	exec_builtin_with_redirs(t_stage *st, char ***envp, int *exitcode)
 
 	saved_in = dup(STDIN_FILENO);
 	saved_out = dup(STDOUT_FILENO);
-	if (apply_input(st) == -1 || apply_output(st) == -1)
+	if (apply_redirs(st) == -1)
 	{
 		restore_fds(saved_in, saved_out);
 		return (1);

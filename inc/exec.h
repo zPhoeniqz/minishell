@@ -53,8 +53,7 @@ t_token		*build_stage(t_token *cur, t_stage *st);
 void		free_stages(t_stage *stages, int n);
 
 bool		push_redir(t_stage *st, t_ttype type, char *file);
-int			apply_input(t_stage *st);
-int			apply_output(t_stage *st);
+int			apply_redirs(t_stage *st);
 
 int			resolve_heredocs(t_stage *stages, int n, t_heredoc_ctx *ctx);
 int			resolve_heredoc(t_redir *r, t_heredoc_ctx *ctx);
