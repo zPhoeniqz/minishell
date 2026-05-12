@@ -29,7 +29,6 @@ static bool	is_numeric(const char *s)
 
 static int	handle_exit(t_stage *st, int *exitcode)
 {
-	ft_putendl_fd("exit", STDERR_FILENO);
 	if (st->argc > 2)
 	{
 		ft_putendl_fd("exit: too many arguments", STDERR_FILENO);
@@ -49,6 +48,7 @@ static int	handle_exit(t_stage *st, int *exitcode)
 		if (*exitcode < 0)
 			*exitcode += 256;
 	}
+	ft_putendl_fd("exit", STDERR_FILENO);
 	return (USEREXIT);
 }
 
