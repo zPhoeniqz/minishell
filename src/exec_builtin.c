@@ -55,7 +55,7 @@ static int	handle_exit(t_stage *st, int *exitcode)
 bool	is_builtin(const char *name)
 {
 	static const char	*b[] = {"echo", "cd", "pwd", "export", "unset", "env",
-			"exit", NULL};
+		"exit", NULL};
 	int					i;
 
 	i = 0;
