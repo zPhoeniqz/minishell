@@ -6,7 +6,7 @@
 /*   By: pbindl <pbindl@student.42berlin.de>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/11 19:59:12 by pbindl            #+#    #+#             */
-/*   Updated: 2026/05/12 12:58:18 by pbindl           ###   ########.fr       */
+/*   Updated: 2026/05/12 14:05:34 by pbindl           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -121,8 +121,7 @@ t_token	*get_next_token(char **envp, char **cursor, int lexit)
 	if (i == -1)
 		return (NULL);
 	if (i == 0 && qstate == 0)
-		return (syntaxerr('>' * (type == OutFile || type == OutFileAppend) + '<'
-				* (type == InFile || type == Heredoc)), NULL);
+		return (syntaxerr(*cur), NULL);
 	out = token_init(type, ft_substr(cur, 0, i), NULL);
 	if (out->type != Heredoc && out->type != HeredocExpand && qstate < 2
 		&& !expand_str(envp, &out->token, lexit))
