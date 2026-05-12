@@ -6,7 +6,7 @@
 /*   By: whuth <whuth@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/19 12:01:21 by whuth             #+#    #+#             */
-/*   Updated: 2026/05/11 20:50:59 by pbindl           ###   ########.fr       */
+/*   Updated: 2026/05/12 12:46:24 by pbindl           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,7 @@
 typedef enum e_ttype
 {
 	Heredoc = 'H',
+	HeredocExpand = 'h',
 	InFile = 'I',
 	OutFile = 'O',
 	OutFileAppend = 'o',

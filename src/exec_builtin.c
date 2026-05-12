@@ -6,7 +6,7 @@
 /*   By: whuth <whuth@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/11 11:57:03 by whuth             #+#    #+#             */
-/*   Updated: 2026/05/11 14:54:24 by whuth            ###   ########.fr       */
+/*   Updated: 2026/05/12 13:10:33 by pbindl           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,7 +55,7 @@ static int	handle_exit(t_stage *st, int *exitcode)
 bool	is_builtin(const char *name)
 {
 	static const char	*b[] = {"echo", "cd", "pwd", "export", "unset", "env",
-		"exit", NULL};
+			"exit", NULL};
 	int					i;
 
 	i = 0;

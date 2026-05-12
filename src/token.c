@@ -6,7 +6,7 @@
 /*   By: pbindl <pbindl@student.42berlin.de>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/11 19:59:12 by pbindl            #+#    #+#             */
-/*   Updated: 2026/05/11 20:21:47 by pbindl           ###   ########.fr       */
+/*   Updated: 2026/05/12 12:58:18 by pbindl           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,23 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+static t_ttype	get_heredoc_type(char *cur)
+{
+	int	i;
+
+	i = -1;
+	while (cur[++i])
+	{
+		if (ft_isspace(cur[i]))
+			continue ;
+		else if (cur[i] == '"' || cur[i] == '\'')
+			return (Heredoc);
+		else
+			return (HeredocExpand);
+	}
+	return (HeredocExpand);
+}
+
 static t_ttype	determine_ttype(char **cursor)
 {
 	char	*cur;
@@ -27,7 +44,7 @@ static t_ttype	determine_ttype(char **cursor)
 	out = Argument;
 	if (cur[0] == '<' && cur[1] == '<')
 	{
-		out = Heredoc;
+		out = get_heredoc_type(cur + 2);
 		cur++;
 	}
 	else if (cur[0] == '<')
@@ -107,8 +124,8 @@ t_token	*get_next_token(char **envp, char **cursor, int lexit)
 		return (syntaxerr('>' * (type == OutFile || type == OutFileAppend) + '<'
 				* (type == InFile || type == Heredoc)), NULL);
 	out = token_init(type, ft_substr(cur, 0, i), NULL);
-	if (out->type != Heredoc && qstate < 2 && !expand_str(envp, &out->token,
-			lexit))
+	if (out->type != Heredoc && out->type != HeredocExpand && qstate < 2
+		&& !expand_str(envp, &out->token, lexit))
 		return (free(out), NULL);
 	*cursor = cur + i + (qstate > 0);
 	if (qstate == 0 && ft_strlen(out->token) == 1 && ft_isspace(*out->token))
