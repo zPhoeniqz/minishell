@@ -51,18 +51,18 @@ static int	wait_child(pid_t pid)
 	return (1);
 }
 
-int	exec_single(t_stage *st, char ***envp, volatile int *exitcode)
+int	exec_single(t_stage *st, t_data *data, volatile int *exitcode)
 {
 	pid_t	pid;
 
 	if (!st->argv || !st->argv[0])
 		return (0);
 	if (is_builtin(st->argv[0]))
-		return (exec_builtin_with_redirs(st, envp, exitcode));
+		return (exec_builtin_with_redirs(st, &data->envp, exitcode));
 	pid = fork_setup();
 	if (pid == -1)
 		return (perror("fork"), 1);
 	if (pid == 0)
-		exec_child(st, *envp, exitcode);
+		exec_child(st, data, exitcode);
 	return (wait_child(pid));
 }

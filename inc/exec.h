@@ -62,11 +62,11 @@ void		heredoc_cleanup(t_heredoc_ctx *ctx);
 
 pid_t		fork_setup(void);
 char		*resolve_path(const char *name, char **envp);
-void		exec_child(t_stage *st, char **envp, volatile int *exitcode);
+void		exec_child(t_stage *st, t_data *data, volatile int *exitcode);
 
 bool		is_builtin(const char *name);
 int			run_builtin(t_stage *st, char ***envp, volatile int *exitcode);
-int			exec_single(t_stage *st, char ***envp, volatile int *exitcode);
+int			exec_single(t_stage *st, t_data *data, volatile int *exitcode);
 
 int			exec_pipeline(t_stage *stages, int n, t_data *data,
 				volatile int *exitcode);

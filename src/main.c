@@ -15,10 +15,10 @@
 #include "../inc/prompt.h"
 #include "../inc/signals.h"
 #include <errno.h>
+#include <stdio.h>
 #include <readline/readline.h>
 #include <signal.h>
 #include <stdbool.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 
@@ -38,11 +38,15 @@ static bool	init_all(char **prompt, char **input, t_data *data)
 	return (true);
 }
 
-static void	free_all(t_data *data, char *prompt)
+static void	free_all(t_data *data, char **prompt, bool truly_all)
 {
-	free(prompt);
-	cwd_state(FREE);
-	arr_destroy((void **)data->envp);
+      if(truly_all)
+            free(*prompt);
+      *prompt = NULL;
+      if(truly_all)
+            cwd_state(FREE);
+      if(truly_all)
+            arr_destroy((void **)data->envp);
 	rl_clear_history();
 }
 
@@ -52,7 +56,9 @@ static int	run(t_data *data, char *input, volatile int *exit_code)
 
 	out = -1;
 	data->tokenlist = parse(data->envp, input, *exit_code);
-	free(input);
+	free(data->prompt);
+      free(input);
+      data->prompt = NULL;
 	if (errno != 0)
 		*exit_code = 2;
 	if (data->tokenlist)
@@ -99,6 +105,7 @@ int	main(void)
 		if (tmp_status == USEREXIT)
 			break ;
 		g_exit_code = tmp_status % 256;
+            free_all(&data, &prompt, false);
 	}
-	return (handle_shlvl(data.envp), free_all(&data, prompt), g_exit_code);
+	return (handle_shlvl(data.envp), free_all(&data, &prompt, true), g_exit_code);
 }

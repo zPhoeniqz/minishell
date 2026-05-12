@@ -30,7 +30,7 @@ static void	exec_external(t_stage *st, char **envp)
 	exit(126);
 }
 
-void	exec_child(t_stage *st, char **envp, int *exitcode)
+void	exec_child(t_stage *st, t_data *data, volatile int *exitcode)
 {
 	int	ret;
 
@@ -40,10 +40,14 @@ void	exec_child(t_stage *st, char **envp, int *exitcode)
 		exit(0);
 	if (is_builtin(st->argv[0]))
 	{
-		ret = run_builtin(st, &envp, exitcode);
-		arr_destroy((void **)envp);
+		ret = run_builtin(st, &data->envp, exitcode);
+		arr_destroy((void **)data->envp);
 		rl_clear_history();
+            tl_destroy(data->tokenlist);
+            free(st->redirs);
+            free(st->argv);
+            cwd_state(FREE);
 		exit(ret);
 	}
-	exec_external(st, envp);
+	exec_external(st, data->envp);
 }
