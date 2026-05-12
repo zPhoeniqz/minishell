@@ -27,20 +27,14 @@ static bool	is_delim_line(char *line, char *delim, size_t dlen)
 			|| line[dlen] == '\0'));
 }
 
-static int	handle_heredoc_line(char *line, char *delim, size_t dlen,
-		t_heredoc_ctx *ctx)
+static int	handle_heredoc_line(char *line, char *delim, size_t dlen, int fd)
 {
 	if (is_delim_line(line, delim, dlen))
 	{
 		free(line);
 		return (1);
 	}
-	if (!expand_str(ctx->data->envp, &line, g_exit_code))
-	{
-		free(line);
-		return (1);
-	}
-	ft_putstr_fd(line, ctx->write_fd);
+	ft_putstr_fd(line, fd);
 	free(line);
 	return (0);
 }
@@ -50,7 +44,6 @@ static void	heredoc_child(int write_fd, char *delim, t_heredoc_ctx *ctx)
 	char	*line;
 	size_t	dlen;
 
-	ctx->write_fd = write_fd;
 	dlen = ft_strlen(delim);
 	while (1)
 	{
@@ -62,7 +55,7 @@ static void	heredoc_child(int write_fd, char *delim, t_heredoc_ctx *ctx)
 				heredoc_warning(delim);
 			break ;
 		}
-		if (handle_heredoc_line(line, delim, dlen, ctx))
+		if (handle_heredoc_line(line, delim, dlen, write_fd))
 			break ;
 	}
 	close(write_fd);
