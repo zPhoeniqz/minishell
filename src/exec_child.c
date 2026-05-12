@@ -6,11 +6,12 @@
 /*   By: whuth <whuth@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/11 12:03:24 by whuth             #+#    #+#             */
-/*   Updated: 2026/05/11 14:55:10 by whuth            ###   ########.fr       */
+/*   Updated: 2026/05/12 16:35:16 by whuth            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/exec.h"
+#include <readline/readline.h>
 
 static void	exec_external(t_stage *st, char **envp)
 {
@@ -31,11 +32,18 @@ static void	exec_external(t_stage *st, char **envp)
 
 void	exec_child(t_stage *st, char **envp, int *exitcode)
 {
+	int	ret;
+
 	if (apply_redirs(st) == -1)
 		exit(1);
 	if (!st->argv || !st->argv[0])
 		exit(0);
 	if (is_builtin(st->argv[0]))
-		exit(run_builtin(st, &envp, exitcode));
+	{
+		ret = run_builtin(st, &envp, exitcode);
+		arr_destroy((void **)envp);
+		rl_clear_history();
+		exit(ret);
+	}
 	exec_external(st, envp);
 }
