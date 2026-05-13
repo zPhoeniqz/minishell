@@ -6,7 +6,7 @@
 /*   By: whuth <whuth@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/26 17:48:36 by whuth             #+#    #+#             */
-/*   Updated: 2026/05/13 00:43:45 by whuth            ###   ########.fr       */
+/*   Updated: 2026/05/13 12:18:30 by whuth            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,15 +34,6 @@ static bool	init_all(char **prompt, char **input, t_data *data)
 	if (!data->envp)
 		return (false);
 	return (true);
-}
-
-static void	free_all(t_data *data, char **prompt)
-{
-	free(*prompt);
-	*prompt = NULL;
-	cwd_state(FREE);
-	arr_destroy((void **)data->envp);
-	rl_clear_history();
 }
 
 static int	run(t_data *data, char *input, volatile int *exit_code)
@@ -75,32 +66,41 @@ void	handle_shlvl(char **envp)
 		ft_putstr_fd("exit\n", STDOUT_FILENO);
 }
 
-int	main(void)
+static int	main_loop(t_data *data, char **prompt, char **input)
 {
-	char	*prompt;
-	char	*input;
-	int		tmp_status;
-	t_data	data;
+	int	tmp_status;
 
-	if (!init_all(&prompt, &input, &data))
-		return (EXIT_FAILURE);
 	while (true)
 	{
 		addsighandler(SIGINT, sigfunc_redisplay_prompt, 0);
-		free(prompt);
-		prompt = NULL;
-		if (!prompt_create(&prompt, cwd_state(READ)))
+		free(*prompt);
+		*prompt = NULL;
+		if (!prompt_create(prompt, cwd_state(READ)))
 			break ;
-		tmp_status = read_cmd(&input, prompt);
+		tmp_status = read_cmd(input, *prompt);
 		if (tmp_status == 0)
 			continue ;
-		else if (tmp_status == -1)
+		if (tmp_status == -1)
 			break ;
-		data.prompt = prompt;
-		tmp_status = run(&data, input, &g_exit_code);
+		data->prompt = *prompt;
+		tmp_status = run(data, *input, &g_exit_code);
 		if (tmp_status == USEREXIT)
 			break ;
 		g_exit_code = tmp_status % 256;
 	}
-	return (handle_shlvl(data.envp), free_all(&data, &prompt), g_exit_code);
+	return (g_exit_code);
+}
+
+int	main(void)
+{
+	char	*prompt;
+	char	*input;
+	t_data	data;
+
+	if (!init_all(&prompt, &input, &data))
+		return (EXIT_FAILURE);
+	main_loop(&data, &prompt, &input);
+	handle_shlvl(data.envp);
+	free_all(&data, &prompt);
+	return (g_exit_code);
 }

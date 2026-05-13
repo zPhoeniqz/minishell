@@ -15,6 +15,15 @@
 #include <stdbool.h>
 #include <unistd.h>
 
+void	free_all(t_data *data, char **prompt)
+{
+	free(*prompt);
+	*prompt = NULL;
+	cwd_state(FREE);
+	arr_destroy((void **)data->envp);
+	rl_clear_history();
+}
+
 char	*ft_getenv(char **envp, const char *name)
 {
 	size_t	len;
