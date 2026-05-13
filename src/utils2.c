@@ -11,6 +11,9 @@
 /* ************************************************************************** */
 
 #include "../libft/libft.h"
+#include "../inc/minishell.h"
+#include "../inc/exec.h"
+#include <readline/readline.h>
 #include <errno.h>
 #include <stdbool.h>
 #include <unistd.h>
