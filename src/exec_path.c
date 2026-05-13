@@ -6,11 +6,12 @@
 /*   By: whuth <whuth@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/11 12:00:36 by whuth             #+#    #+#             */
-/*   Updated: 2026/05/12 16:48:35 by pbindl           ###   ########.fr       */
+/*   Updated: 2026/05/13 18:57:18 by pbindl           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/exec.h"
+#include <readline/readline.h>
 #include <signal.h>
 
 pid_t	fork_setup(void)
@@ -19,9 +20,12 @@ pid_t	fork_setup(void)
 
 	out = fork();
 	if (out == 0)
+	{
 		addsighandler(SIGINT, SIG_DFL, 0);
+		addsighandler(SIGQUIT, SIG_DFL, 0);
+	}
 	else
-		addsighandler(SIGINT, sigfunc_return_to_prompt, 0);
+		addsighandler(SIGINT, SIG_IGN, 0);
 	return (out);
 }
 

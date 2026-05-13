@@ -6,11 +6,14 @@
 /*   By: whuth <whuth@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/11 12:04:37 by whuth             #+#    #+#             */
-/*   Updated: 2026/05/13 14:37:15 by pbindl           ###   ########.fr       */
+/*   Updated: 2026/05/13 20:31:57 by pbindl           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/exec.h"
+#include <stdio.h>
+#include <readline/readline.h>
+#include <sys/ioctl.h>
 
 static int	pipe_wait_all(pid_t *pids, int n)
 {
@@ -32,8 +35,8 @@ static int	pipe_wait_all(pid_t *pids, int n)
 		}
 		i++;
 	}
-	if (ret == 130)
-		sigfunc_return_to_prompt(0);
+	if (ret == 130 || ret == 131)
+		write(STDOUT_FILENO, "\n", 1);
 	return (ret);
 }
 

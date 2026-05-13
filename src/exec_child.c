@@ -6,12 +6,13 @@
 /*   By: whuth <whuth@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/11 12:03:24 by whuth             #+#    #+#             */
-/*   Updated: 2026/05/13 00:16:53 by whuth            ###   ########.fr       */
+/*   Updated: 2026/05/13 20:42:25 by pbindl           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/exec.h"
 #include <readline/readline.h>
+#include <signal.h>
 
 static void	child_free(t_data *data, t_stage *st)
 {

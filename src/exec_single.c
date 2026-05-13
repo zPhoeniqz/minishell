@@ -6,12 +6,16 @@
 /*   By: whuth <whuth@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/11 11:58:34 by whuth             #+#    #+#             */
-/*   Updated: 2026/05/13 00:36:28 by whuth            ###   ########.fr       */
+/*   Updated: 2026/05/13 20:34:34 by pbindl           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/exec.h"
+#include <stdio.h>
+#include <readline/readline.h>
 #include <signal.h>
+#include <sys/ioctl.h>
+#include <unistd.h>
 
 static void	restore_fds(int saved_in, int saved_out)
 {
@@ -56,6 +60,7 @@ int	exec_single(t_stage *st, t_data *data, volatile int *exitcode)
 {
 	pid_t	pid;
 	t_stage	cur_stage;
+	int		ret;
 
 	if (!st->argv || !st->argv[0])
 		return (0);
@@ -69,7 +74,8 @@ int	exec_single(t_stage *st, t_data *data, volatile int *exitcode)
 		rescue_stage(&cur_stage, st, 0, 1);
 		exec_child(&cur_stage, data, exitcode);
 	}
-	else
-		addsighandler(SIGINT, SIG_IGN, 0);
-	return (wait_child(pid));
+	ret = wait_child(pid);
+	if (ret == 130 || ret == 131)
+		write(STDOUT_FILENO, "\n", 1);
+	return (ret);
 }

@@ -6,15 +6,16 @@
 /*   By: pbindl <pbindl@student.42berlin.de>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/13 18:27:41 by pbindl            #+#    #+#             */
-/*   Updated: 2026/05/12 16:46:18 by pbindl           ###   ########.fr       */
+/*   Updated: 2026/05/13 20:30:12 by pbindl           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/signals.h"
 #include "../libft/libft.h"
-#include <signal.h>
 #include <stdio.h>
 #include <readline/readline.h>
+#include <signal.h>
+#include <sys/ioctl.h>
 #include <sys/wait.h>
 #include <unistd.h>
 
@@ -36,9 +37,9 @@ int	addsighandler(int sig, void (*handler)(int), int flags)
 void	sigfunc_redisplay_prompt(int sig)
 {
 	(void)sig;
-	rl_replace_line("", 0);
 	write(STDOUT_FILENO, "\n", 1);
 	rl_on_new_line();
+	rl_replace_line("", 0);
 	rl_redisplay();
 	g_exit_code = 130;
 }
@@ -46,7 +47,7 @@ void	sigfunc_redisplay_prompt(int sig)
 void	sigfunc_return_to_prompt(int sig)
 {
 	(void)sig;
-	write(STDOUT_FILENO, "\n", 1);
-	rl_on_new_line();
+	ioctl(STDIN_FILENO, TIOCSTI, "\n");
+	rl_redisplay();
 	g_exit_code = 130;
 }

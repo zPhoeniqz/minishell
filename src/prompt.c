@@ -6,7 +6,7 @@
 /*   By: pbindl <pbindl@student.42berlin.de>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/07 16:46:31 by pbindl            #+#    #+#             */
-/*   Updated: 2026/05/10 21:42:27 by pbindl           ###   ########.fr       */
+/*   Updated: 2026/05/13 20:24:06 by pbindl           ###   ########.fr       */
 /*   Updated: 2026/04/15 14:43:32 by pbindl           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
@@ -34,6 +34,7 @@ int	read_cmd(char **target_buf, char *prompt)
 {
 	char	*input;
 
+	rl_redisplay();
 	input = readline(prompt);
 	if (!input)
 		return (-1);

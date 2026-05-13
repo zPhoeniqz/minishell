@@ -6,7 +6,7 @@
 /*   By: whuth <whuth@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/26 17:48:36 by whuth             #+#    #+#             */
-/*   Updated: 2026/05/13 16:26:36 by pbindl           ###   ########.fr       */
+/*   Updated: 2026/05/13 20:37:13 by pbindl           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,13 +48,20 @@ static int	run(t_data *data, char *input, volatile int *exit_code)
 	if (data->tokenlist)
 	{
 		if (errno == 0)
-		{
-			addsighandler(SIGINT, sigfunc_return_to_prompt, 0);
 			out = exec(data, exit_code);
-		}
 		tl_destroy(data->tokenlist);
 	}
 	return (out);
+}
+
+static void	print_exit(char **envp)
+{
+	int	shlvl;
+
+	shlvl = 0;
+	shlvl = ft_atoi(ft_getenv(envp, "SHLVL"));
+	if (shlvl > 0)
+		ft_putstr_fd("exit\n", STDOUT_FILENO);
 }
 
 static int	main_loop(t_data *data, char **prompt, char **input)
@@ -63,9 +70,8 @@ static int	main_loop(t_data *data, char **prompt, char **input)
 
 	while (true)
 	{
-		if (g_exit_code == 130)
-			sigfunc_return_to_prompt(0);
 		addsighandler(SIGINT, sigfunc_redisplay_prompt, 0);
+		addsighandler(SIGQUIT, SIG_IGN, 0);
 		free(*prompt);
 		*prompt = NULL;
 		if (!prompt_create(prompt, cwd_state(READ)))
@@ -74,7 +80,10 @@ static int	main_loop(t_data *data, char **prompt, char **input)
 		if (tmp_status == 0)
 			continue ;
 		if (tmp_status == -1)
+		{
+			print_exit(data->envp);
 			break ;
+		}
 		data->prompt = *prompt;
 		tmp_status = run(data, *input, &g_exit_code);
 		if (tmp_status == USEREXIT)
@@ -90,7 +99,6 @@ int	main(void)
 	char	*input;
 	t_data	data;
 
-	addsighandler(SIGQUIT, SIG_IGN, 0);
 	if (!init_all(&prompt, &input, &data))
 		return (EXIT_FAILURE);
 	main_loop(&data, &prompt, &input);

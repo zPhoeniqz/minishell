@@ -6,7 +6,7 @@
 /*   By: whuth <whuth@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/19 12:01:21 by whuth             #+#    #+#             */
-/*   Updated: 2026/05/13 12:18:28 by whuth            ###   ########.fr       */
+/*   Updated: 2026/05/13 20:38:24 by pbindl           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 # include "../libft/libft.h"
 # include "builtins.h"
 # include "utils.h"
+# include <signal.h>
 # include <stdbool.h>
 
 # define USEREXIT 256
