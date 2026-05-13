@@ -91,7 +91,7 @@ int	exec(t_data *data, volatile int *exitcode)
 		free_stages(stages, n);
 		return (1);
 	}
-	if (n == 1) 
+	if (n == 1)
 		ret = exec_single(stages, data, exitcode);
 	else
 		ret = exec_pipeline(stages, n, data, exitcode);

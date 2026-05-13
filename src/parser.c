@@ -75,7 +75,7 @@ t_tl	*parse(char **envp, char *src, int last_exit_code)
 	return (out);
 }
 
-/*/
+/*
 int	main(int argc, char **argv, char **envp) {
   if (argc != 2)
 	return (1);

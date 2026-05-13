@@ -68,6 +68,7 @@ int	apply_redirs(t_stage *st)
 		else if (dup2(fd, STDOUT_FILENO) < 0)
 			return (close(fd), perror("dup2"), -1);
 		close(fd);
+		st->redirs[i].fd = -1;
 		i++;
 	}
 	return (0);

@@ -6,7 +6,7 @@
 /*   By: whuth <whuth@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/11 11:32:17 by whuth             #+#    #+#             */
-/*   Updated: 2026/05/12 15:11:58 by pbindl           ###   ########.fr       */
+/*   Updated: 2026/05/13 11:46:32 by whuth            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,10 +48,19 @@ typedef struct s_heredoc_ctx
 	int		write_fd;
 }			t_heredoc_ctx;
 
+typedef struct s_pipe_iter
+{
+	int		prev_read;
+	int		*p;
+	int		i;
+	int		n;
+	t_data	*data;
+}			t_pipe_iter;
+
 int			count_stages(t_token *cur);
 t_token		*build_stage(t_token *cur, t_stage *st);
 void		free_stages(t_stage *stages, int n);
-void rescue_stage(t_stage *target, t_stage *stages, int idx, int n);
+void		rescue_stage(t_stage *target, t_stage *stages, int idx, int n);
 
 bool		push_redir(t_stage *st, t_ttype type, char *file);
 int			apply_redirs(t_stage *st);
@@ -64,6 +73,8 @@ void		heredoc_cleanup(t_heredoc_ctx *ctx);
 pid_t		fork_setup(void);
 char		*resolve_path(const char *name, char **envp);
 void		exec_child(t_stage *st, t_data *data, volatile int *exitcode);
+void		pipe_child(t_stage *stages, pid_t *pids, volatile int *exitcode,
+				t_pipe_iter *it);
 
 bool		is_builtin(const char *name);
 int			run_builtin(t_stage *st, char ***envp, volatile int *exitcode);
