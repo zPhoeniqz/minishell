@@ -6,7 +6,7 @@
 /*   By: whuth <whuth@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/26 17:48:36 by whuth             #+#    #+#             */
-/*   Updated: 2026/05/13 12:18:30 by whuth            ###   ########.fr       */
+/*   Updated: 2026/05/13 14:38:02 by pbindl           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,6 +72,8 @@ static int	main_loop(t_data *data, char **prompt, char **input)
 
 	while (true)
 	{
+		if (g_exit_code == 130)
+			sigfunc_return_to_prompt(0);
 		addsighandler(SIGINT, sigfunc_redisplay_prompt, 0);
 		free(*prompt);
 		*prompt = NULL;
@@ -97,6 +99,7 @@ int	main(void)
 	char	*input;
 	t_data	data;
 
+	addsighandler(SIGQUIT, SIG_IGN, 0);
 	if (!init_all(&prompt, &input, &data))
 		return (EXIT_FAILURE);
 	main_loop(&data, &prompt, &input);

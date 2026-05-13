@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "../inc/exec.h"
+#include <signal.h>
 
 static void	restore_fds(int saved_in, int saved_out)
 {
@@ -68,5 +69,7 @@ int	exec_single(t_stage *st, t_data *data, volatile int *exitcode)
 		rescue_stage(&cur_stage, st, 0, 1);
 		exec_child(&cur_stage, data, exitcode);
 	}
+	else
+		addsighandler(SIGINT, SIG_IGN, 0);
 	return (wait_child(pid));
 }

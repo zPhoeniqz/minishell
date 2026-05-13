@@ -6,7 +6,7 @@
 /*   By: whuth <whuth@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/11 12:04:37 by whuth             #+#    #+#             */
-/*   Updated: 2026/05/13 11:49:47 by whuth            ###   ########.fr       */
+/*   Updated: 2026/05/13 14:37:15 by pbindl           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,8 @@ static int	pipe_wait_all(pid_t *pids, int n)
 		}
 		i++;
 	}
+	if (ret == 130)
+		sigfunc_return_to_prompt(0);
 	return (ret);
 }
 
@@ -84,6 +86,7 @@ int	exec_pipeline(t_stage *stages, int n, t_data *data, volatile int *exitcode)
 	pids = ft_calloc(n, sizeof(pid_t));
 	if (!pids)
 		return (perror("calloc"), 1);
+	addsighandler(SIGINT, SIG_IGN, 0);
 	if (pipe_loop(stages, pids, data, exitcode) == -1)
 	{
 		free(pids);
