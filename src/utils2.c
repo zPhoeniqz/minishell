@@ -6,15 +6,17 @@
 /*   By: pbindl <pbindl@student.42berlin.de>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/11 20:01:32 by pbindl            #+#    #+#             */
-/*   Updated: 2026/05/12 14:11:35 by pbindl           ###   ########.fr       */
+/*   Updated: 2026/05/13 16:17:03 by pbindl           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../libft/libft.h"
-#include "../inc/minishell.h"
 #include "../inc/exec.h"
-#include <readline/readline.h>
+#include "../inc/minishell.h"
+#include "../libft/libft.h"
 #include <errno.h>
+#include <limits.h>
+#include <stdio.h>
+#include <readline/readline.h>
 #include <stdbool.h>
 #include <unistd.h>
 

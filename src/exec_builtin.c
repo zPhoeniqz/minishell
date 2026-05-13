@@ -6,14 +6,19 @@
 /*   By: whuth <whuth@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/11 11:57:03 by whuth             #+#    #+#             */
-/*   Updated: 2026/05/12 16:12:50 by pbindl           ###   ########.fr       */
+/*   Updated: 2026/05/13 16:29:28 by pbindl           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/exec.h"
+#include "../inc/utils.h"
+#include <limits.h>
 
 static bool	is_numeric(const char *s)
 {
+	ft_atoll(s);
+	if (errno == EINVAL)
+		return (false);
 	if (*s == '-' || *s == '+')
 		s++;
 	if (!*s)
@@ -27,8 +32,13 @@ static bool	is_numeric(const char *s)
 	return (true);
 }
 
-static int	handle_exit(t_stage *st, volatile int *exitcode)
+static int	handle_exit(char **envp, t_stage *st, volatile int *exitcode)
 {
+	int	shlvl;
+
+	shlvl = ft_atoi(ft_getenv(envp, "SHLVL"));
+	if (shlvl > 0)
+		ft_putstr_fd("exit\n", STDOUT_FILENO);
 	if (st->argc > 2)
 	{
 		ft_putendl_fd("exit: too many arguments", STDERR_FILENO);
@@ -86,6 +96,6 @@ int	run_builtin(t_stage *st, char ***envp, volatile int *exitcode)
 	if (ft_strncmp(n, "env", 4) == 0)
 		return (env(st->argc, st->argv, *envp), 0);
 	if (ft_strncmp(n, "exit", 5) == 0)
-		return (handle_exit(st, exitcode));
+		return (handle_exit(*envp, st, exitcode));
 	return (1);
 }

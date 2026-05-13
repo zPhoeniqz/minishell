@@ -6,7 +6,7 @@
 /*   By: whuth <whuth@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/26 17:48:36 by whuth             #+#    #+#             */
-/*   Updated: 2026/05/13 14:38:02 by pbindl           ###   ########.fr       */
+/*   Updated: 2026/05/13 16:26:36 by pbindl           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,15 +57,6 @@ static int	run(t_data *data, char *input, volatile int *exit_code)
 	return (out);
 }
 
-void	handle_shlvl(char **envp)
-{
-	int	exit_code;
-
-	exit_code = ft_atoi(ft_getenv(envp, "SHLVL"));
-	if (exit_code > 0)
-		ft_putstr_fd("exit\n", STDOUT_FILENO);
-}
-
 static int	main_loop(t_data *data, char **prompt, char **input)
 {
 	int	tmp_status;
@@ -103,7 +94,6 @@ int	main(void)
 	if (!init_all(&prompt, &input, &data))
 		return (EXIT_FAILURE);
 	main_loop(&data, &prompt, &input);
-	handle_shlvl(data.envp);
 	free_all(&data, &prompt);
 	return (g_exit_code);
 }

@@ -8,7 +8,7 @@ LIBFT_DIR	= libft
 LIBFT_A		= libft/libft.a
 
 VPATH		= src:tests
-SRC			= builtins.c builtins_export.c builtins_utils.c exec_builtin.c exec.c exec_child.c exec_heredoc2.c exec_heredoc.c exec_path.c exec_pipe.c exec_pipe2.c exec_redir.c exec_single.c exec_stage.c expansion.c ft_setenv.c gnl.c main.c parser.c path.c prompt.c signals.c token.c token_utils.c utils2.c utils.c
+SRC			= builtins.c builtins_export.c builtins_utils.c exec_builtin.c exec.c exec_child.c exec_heredoc2.c exec_heredoc.c exec_path.c exec_pipe.c exec_pipe2.c exec_redir.c exec_single.c exec_stage.c expansion.c ft_setenv.c gnl.c main.c parser.c path.c prompt.c signals.c token.c token_utils.c utils2.c utils.c ft_atoll.c
 OBJ			= $(addprefix $(BUILD_DIR)/,$(SRC:.c=.o))
 
 CC			= gcc
