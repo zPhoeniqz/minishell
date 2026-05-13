@@ -45,7 +45,4 @@ fclean: clean
 
 re: fclean all
 
-valgrind: all
-	valgrind --leak-check=full --show-leak-kinds=all --trace-children=yes --track-fds=yes --suppressions=ignore_readline_errors.supp --suppressions=ignore_usr_bin.supp ./$(NAME)
-
 .PHONY: all clean fclean re

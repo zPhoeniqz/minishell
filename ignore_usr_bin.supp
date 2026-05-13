@@ -1,7 +1,0 @@
-{
-	<suppress_usr_bin>
-	Memcheck:Leak
-	match-leak-kinds: reachable
-    ...
-	obj:/usr/bin/*
-}
